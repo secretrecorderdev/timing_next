@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+/* 타일윈드에서는 사용하지 않는 css 를 제거한다.
+  따라서 bg-blue-200 등이 빌드시 존재하지 않는 경우
+  엑션을 통해 bg-blue-200 등으로 변경되어도 css 가 존재하지 않기 때문에 표시되지 않음.
+  아래 문구는 그런 css 를 삽입하기 위해 사용, 2025-06-20, jang */
+@source inline('{hover:,active:,}bg-blue-{50,{100..900..100},950}');
+@source inline('{hover:,active:,}bg-violet-{50,{100..900..100},950}');
+@source inline('{hover:,active:,}bg-gray-{50,{100..900..100},950}');
+@source inline('{hover:,active:,}bg-red-{50,{100..900..100},950}');
+@source inline('{hover:,active:,}bg-emerald-{50,{100..900..100},950}');
+@source inline('{hover:,active:,}bg-gray-{50,{100..900..100},950}');
+
+@source inline('{hover:,active:,}text-blue-{50,{100..900..100},950}');
+@source inline('{hover:,active:,}text-violet-{50,{100..900..100},950}');
+@source inline('{hover:,active:,}text-gray-{50,{100..900..100},950}');
+@source inline('{hover:,active:,}text-red-{50,{100..900..100},950}');
+@source inline('{hover:,active:,}text-emerald-{50,{100..900..100},950}');
+@source inline('{hover:,active:,}text-gray-{50,{100..900..100},950}');
+
+/* rounded-md font-semibold focus:outline-none transition cursor-pointer text-lg px-5 py-3 text-white bg-blue-500 hover:bg-blue-600 active:bg-blue-700 */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+/* @theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+} */
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+} */
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  /* font-family: 'Pretendard', Arial, Helvetica, sans-serif; */
+  font-family: 'Pretendard', Arial, Helvetica, sans-serif;
+}
+
+/* 서서히 나타나는 효과 */
+@keyframes cloak {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-cloak {
+  animation: cloak 0.2s ease forwards;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/assets/fonts/Pretendard-Thin.woff2') format('woff2');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/assets/fonts/Pretendard-ExtraLight.woff2') format('woff2');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/assets/fonts/Pretendard-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/assets/fonts/Pretendard-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/assets/fonts/Pretendard-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/assets/fonts/Pretendard-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/assets/fonts/Pretendard-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/assets/fonts/Pretendard-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/assets/fonts/Pretendard-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
