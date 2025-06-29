@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { textColorMap } from '@/ui/lib/colors'
 import { ColorType } from '@/ui/lib/colors' 
 export type TextVariant = 'heading' | 'body' | 'caption' | 'label'
-export type TextSize = 'sm' | 'md' | 'lg'
+export type TextSize = 'sm' | 'md' | 'lg' | 'xg'
 
 export type TextProps<T extends ElementType = 'p'> = {
   as?: T
@@ -37,6 +37,7 @@ export const Text = <T extends ElementType = 'p'>({
     sm: 'text-sm',
     md: 'text-base',
     lg: 'text-lg',
+    xg: 'text-xl',
   }[size]
 
   const colorClass = [

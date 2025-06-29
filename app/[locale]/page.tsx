@@ -3,8 +3,8 @@
 // 플라스크에서 서버 렌더링 하던걸 NextJs 에 맞춰서 적용.
 export const dynamic = 'force-static';
 
-import InfoPage from '@/ui/page/Info.ssg';
+// import InfoPage from '@/ui/page/Info.ssg';
 
 export default function Home() {
-  return <InfoPage />;
+  return <></>;
 }

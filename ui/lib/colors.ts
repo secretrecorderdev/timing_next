@@ -26,9 +26,9 @@ export const textColorMap: ColorScheme = {
     disabled: disabledTextClass,
   },
   secondary: {
-    default: "text-violet-500",
-    hover: "hover:text-violet-600",
-    active: "active:text-violet-700",
+    default: "text-blue-500",
+    hover: "hover:text-blue-600",
+    active: "active:text-blue-700",
     disabled: disabledTextClass,
   },
   muted: {
@@ -50,8 +50,8 @@ export const textColorMap: ColorScheme = {
     disabled: disabledTextClass,
   },
   default: {
-    default: "text-gray-800"
-  }
+    default: "text-gray-800",
+  },
 };
 
 export const bgColorMap: ColorScheme = {
