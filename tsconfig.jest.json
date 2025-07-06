@@ -1,0 +1,9 @@
+// File: tsconfig.jest.json
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "jsx": "react-jsx", // JSX 파싱 가능하게
+    "esModuleInterop": true
+  }
+}

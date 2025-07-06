@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, useState } from 'react';
-
+import { useRef } from 'react';
+import type { ColorType } from '@/ui/lib/colors';
+import { textColorMap } from '@/ui/lib/colors';
 
 export type TabItem = {
   key: string;
@@ -12,14 +13,16 @@ type HorizontalTabsProps = {
   tabs: TabItem[];
   activeKey: string;
   onChange: (key: string) => void;
+  color?: ColorType;
 };
 
 export default function HorizontalTabs({
   tabs,
   activeKey,
   onChange,
+  color = 'primary',
 }: HorizontalTabsProps) {
-  const [activeTab, setActiveTab] = useState(activeKey);
+  // const [activeTab, setActiveTab] = useState(activeKey);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   
   const isDrag = useRef(false);
@@ -57,24 +60,23 @@ export default function HorizontalTabs({
       className="overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing bg-white"
     >
       <div className="flex space-x-6 px-4 w-max">
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            className={`py-3 text-sm font-medium whitespace-nowrap cursor-pointer ${
-              activeTab === tab.key
-                ? 'text-blue-500 border-b-2 border-blue-500'
-                : 'text-gray-500'
-            }`}
-            onClick={() => {
-              setActiveTab(tab.key)
-              onChange(tab.key);
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
+        {tabs.map((tab) => {
+          const isActive = activeKey === tab.key;
+          const textClass = isActive
+            ? textColorMap[color].default + ' border-b-2 ' + textColorMap[color].default.replace('text-', 'border-')
+            : 'text-gray-500';
+
+          return (
+            <button
+              key={tab.key}
+              className={`py-3 text-sm font-medium whitespace-nowrap cursor-pointer ${textClass}`}
+              onClick={() => onChange(tab.key)}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
     </div>
-
   );
 }

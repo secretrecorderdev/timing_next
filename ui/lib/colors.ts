@@ -16,7 +16,16 @@ const disabledBgClass = "bg-gray-300"
 
 export type ColorMap = Record<string, ColorScheme>
 
-export type ColorType = "primary" | "secondary" | "muted" | "error" | "success" | "default"
+export const colorTypes = [
+  'primary',
+  'secondary',
+  'muted',
+  'error',
+  'success',
+  'default',
+] as const;
+
+export type ColorType = typeof colorTypes[number];
 
 export const textColorMap: ColorScheme = {
   primary: {
