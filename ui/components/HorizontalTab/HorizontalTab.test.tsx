@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import HorizontalTabs, { TabItem } from './HorizontalTabs'
+import HorizontalTabs, { TabItem } from './HorizontalTab'
 import { textColorMap } from '@/ui/lib/colors';
 
 

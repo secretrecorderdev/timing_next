@@ -16,7 +16,7 @@ type HorizontalTabsProps = {
   color?: ColorType;
 };
 
-export default function HorizontalTabs({
+export default function HorizontalTab({
   tabs,
   activeKey,
   onChange,

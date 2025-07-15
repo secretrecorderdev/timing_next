@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import HorizontalTabs, { TabItem } from './HorizontalTabs';
+import HorizontalTabs, { TabItem } from './HorizontalTab';
 // import { useArgs } from '@storybook/preview-api';
 import { colorTypes } from '@/ui/lib/colors';
 

@@ -11,11 +11,11 @@ export function Header() {
         {/* 왼쪽: 로고 + The Timing */}
         <Link
           href="/"
-          className="flex items-center gap-1 text-primary font-bold me-4"
+          className="flex items-center gap-1 text-primary font-bold me-2"
         >
           <Image
             src="/assets/images/header/logo_image_green.png"
-            alt="이벤트 PC 배너"
+            alt="타이밍 로고"
             width={36}
             height={36}
             priority
@@ -30,7 +30,7 @@ export function Header() {
         </Link>
 
         {/* 오른쪽: 한글 텍스트 */}
-        <div className="flex items-center gap-1 text-primary font-bold">
+        <div className="flex items-center gap-1 text-primary font-bold mt-1">
           <Text as="span" size="md" variant="heading">
             주식은
           </Text>
