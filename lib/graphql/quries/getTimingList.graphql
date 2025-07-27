@@ -1,0 +1,18 @@
+query GetTimingList(
+  $startDate: String!
+  $endDate: String!
+  $limit: Int
+  $offset: Int
+) {
+  getTimingList(
+    startDate: $startDate
+    endDate: $endDate
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    name
+    timingDate
+    regDate
+  }
+}

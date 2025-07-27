@@ -1,4 +1,5 @@
 import type { StorybookConfig } from "@storybook/nextjs-vite";
+import tsconfigPaths from 'vite-tsconfig-paths'; 
 
 const config: StorybookConfig = {
   "stories": [
@@ -22,6 +23,11 @@ const config: StorybookConfig = {
   },
   "staticDirs": [
     "..\\public"
-  ]
+  ],
+  viteFinal: async (config) => {
+    config.plugins = config.plugins || [];
+    config.plugins.push(tsconfigPaths());
+    return config;
+  },
 };
 export default config;
