@@ -5,7 +5,7 @@ import { Text } from '../atom/text/Text';
 
 export function Header() {
   return (
-    <header className="w-full px-4 py-3 flex justify-between items-center border-b border-white/10 bg-bgDark">
+    <header className="w-full px-0 py-3 flex justify-between items-center border-b border-white/10">
       {/* 왼쪽: 로고 */}
       <div className="flex items-center gap-4">
         {/* 왼쪽: 로고 + The Timing */}
@@ -19,7 +19,7 @@ export function Header() {
             width={36}
             height={36}
             priority
-            className="w-auto h-9 me-2"
+            className="w-auto h-9 me-2 bg-blue-500"
           />
           <Text as="span" size="xg" variant="heading">
             The
@@ -34,14 +34,14 @@ export function Header() {
           <Text as="span" size="md" variant="heading">
             주식은
           </Text>
-          <Text as="span" color="primary" size="md" variant="heading">
+          <Text className='mt-0' as="span" color="primary" size="md" variant="heading">
             타이밍
           </Text>
         </div>
       </div>
 
       {/* 오른쪽: 로그인 / 회원가입 */}
-      <div className="flex gap-4 items-center text-sm me-8">
+      <div className="flex gap-4 items-center text-sm me-0">
         <Link href="" className="hover:underline">
           로그인
         </Link>

@@ -22,6 +22,7 @@ export const colorTypes = [
   'muted',
   'error',
   'success',
+  'info',
   'default',
 ] as const;
 
@@ -58,6 +59,12 @@ export const textColorMap: ColorScheme = {
     active: "active:text-emerald-700",
     disabled: disabledTextClass,
   },
+  info: {
+    default: "text-cyan-500",
+    hover: "hover:text-cyan-600",
+    active: "active:text-cyan-700",
+    disabled: disabledTextClass,
+  },
   default: {
     default: "text-gray-800",
   },
@@ -67,7 +74,7 @@ export const bgColorMap: ColorScheme = {
   primary: {
     default: "bg-blue-500",
     hover: "hover:bg-blue-600",
-    active: "active:bg-blue-700",
+    active: "active:bg-blue-70",
     disabled: disabledBgClass,
   },
   secondary: {
@@ -92,6 +99,12 @@ export const bgColorMap: ColorScheme = {
     default: "bg-emerald-500",
     hover: "hover:bg-emerald-600",
     active: "active:bg-emerald-700",
+    disabled: disabledBgClass,
+  },
+  info: {
+    default: "bg-cyan-500",
+    hover: "hover:bg-cyan-600",
+    active: "active:bg-cyan-700",
     disabled: disabledBgClass,
   },
   default: {
