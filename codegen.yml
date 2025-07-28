@@ -7,7 +7,7 @@ generates:
     plugins:
       - "typescript"
       - "typescript-operations"
-
+      - "typed-document-node"  
 # 아래는 훅 생성용
   # lib/graphql/generated-hooks.ts:
   #   plugins:

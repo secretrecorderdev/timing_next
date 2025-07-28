@@ -1,7 +1,6 @@
 // import TimingPageClient from "@/app/[locale]/timing/TimingPageClient";
+import TimingPageClient from "@/ui/page/TimingPageClient";
 
-// export default function Timing() {
-//   return <>
-//     타이밍 페이지
-//   </>;
-// }
+export default function Timing() {
+  return <TimingPageClient />
+}

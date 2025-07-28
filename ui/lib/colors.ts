@@ -111,3 +111,45 @@ export const bgColorMap: ColorScheme = {
     default: "bg-gray-800"
   }
 };
+
+export const borderColorMap: ColorScheme = {
+  primary: {
+    default: "border-emerald-500",
+    hover: "hover:border-emerald-600",
+    active: "active:border-emerald-700",
+    disabled: "border-gray-300",
+  },
+  secondary: {
+    default: "border-blue-500",
+    hover: "hover:border-blue-600",
+    active: "active:border-blue-700",
+    disabled: "border-gray-300",
+  },
+  muted: {
+    default: "border-gray-500",
+    hover: "hover:border-gray-600",
+    active: "active:border-gray-700",
+    disabled: "border-gray-300",
+  },
+  error: {
+    default: "border-red-500",
+    hover: "hover:border-red-600",
+    active: "active:border-red-700",
+    disabled: "border-gray-300",
+  },
+  success: {
+    default: "border-emerald-500",
+    hover: "hover:border-emerald-600",
+    active: "active:border-emerald-700",
+    disabled: "border-gray-300",
+  },
+  info: {
+    default: "border-cyan-500",
+    hover: "hover:border-cyan-600",
+    active: "active:border-cyan-700",
+    disabled: "border-gray-300",
+  },
+  default: {
+    default: "border-gray-800",
+  },
+};
