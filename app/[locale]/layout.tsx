@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import "@/app/globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { LocaleType } from "@/context/LanguageContext";
-import { baseMetadata } from "@/lib/metadata";
+import { baseMetadata } from "@/lib/metadata/metadata";
 import { Header } from "@/ui/layout/Header";
 import { QueryProvidersClient } from '../queryProvidersClient';
 import NavBar from "@/ui/layout/NavBar";

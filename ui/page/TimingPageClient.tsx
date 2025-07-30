@@ -6,13 +6,14 @@ import { useState, useEffect, useRef } from "react";
 import { request } from "graphql-request";
 import { useTimingDateRangeStore } from "@/store/timing/useTimingDateRangeStore";
 import { useLoadingStore } from "@/store/useLoadingStore";
+import { getNextServerUrl } from "@/lib/utils/getNextServerUrl";
 import {
   GetTimingListQueryVariables,
   GetTimingListQuery,
   GetTimingListDocument,
 } from "@/lib/graphql/generated";
 
-const fetchTimingList = async ({
+export const fetchTimingList = async ({
   pageParam = 0,
   startDate,
   endDate,
@@ -27,23 +28,32 @@ const fetchTimingList = async ({
     limit: 50,
     offset: pageParam,
   };
-  const data = await request<GetTimingListQuery>(
-    "/api/graphql", // ← 상대 경로로 호출하면 Next.js API Route로 감
-    GetTimingListDocument,
-    variables
-  );
 
-  return {
-    items: data.getTimingList,
-    nextOffset: pageParam + data.getTimingList.length,
-    hasMore: data.getTimingList.length > 0,
-  };
+  try {
+    const data = await request<GetTimingListQuery, GetTimingListQueryVariables>(
+      getNextServerUrl("/api/graphql"),
+      GetTimingListDocument,
+      variables
+    );
+
+    console.log("📦 타이밍 데이터:", data);
+
+    return {
+      items: data.getTimingList,
+      nextOffset: pageParam + data.getTimingList.length,
+      hasMore: data.getTimingList.length > 0,
+    };
+  } catch (error) {
+    console.error("GraphQL 요청 실패:", error);
+    throw error;
+  }
 };
+
 export default function TimingPageClient() {
   // const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
   const { startDate, endDate } = useTimingDateRangeStore();
   const { setLoading } = useLoadingStore();
-
+  console.log("날짜", { startDate, endDate });
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useInfiniteQuery({
       queryKey: ["timingList", startDate, endDate],

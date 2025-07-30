@@ -8,13 +8,23 @@ interface DateRangeStore {
   resetRange: () => void
 }
 
-export const useTimingDateRangeStore = create<DateRangeStore>((set) => ({
-  startDate: dayjs().subtract(3, 'month').format('YYYY-MM-DD'),
-  endDate: dayjs().format('YYYY-MM-DD'),
-  setRange: (start, end) => set({ startDate: start, endDate: end }),
-  resetRange: () =>
-    set({
-      startDate: dayjs().subtract(3, 'month').format('YYYY-MM-DD'),
-      endDate: dayjs().format('YYYY-MM-DD'),
-    }),
-}))
+function formatDateTimeTo12Digits(date: dayjs.Dayjs): string {
+  return date.format('YYYYMMDDHHmm') // "202507281130"
+}
+
+
+export const useTimingDateRangeStore = create<DateRangeStore>((set) => {
+  const now = dayjs()
+  const threeMonthsAgo = now.subtract(24, 'month')
+
+  return {
+    startDate: formatDateTimeTo12Digits(threeMonthsAgo),
+    endDate: formatDateTimeTo12Digits(now),
+    setRange: (start, end) => set({ startDate: start, endDate: end }),
+    resetRange: () =>
+      set({
+        startDate: formatDateTimeTo12Digits(dayjs().subtract(3, 'month')),
+        endDate: formatDateTimeTo12Digits(dayjs()),
+      }),
+  }
+})

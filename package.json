@@ -10,7 +10,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "jest",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "gql": "graphql-codegen"
   },
   "dependencies": {
     "@storybook/addon-a11y": "^9.0.18",
