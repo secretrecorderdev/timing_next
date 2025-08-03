@@ -12,7 +12,6 @@ function formatDateTimeTo12Digits(date: dayjs.Dayjs): string {
   return date.format('YYYYMMDDHHmm') // "202507281130"
 }
 
-
 export const useTimingDateRangeStore = create<DateRangeStore>((set) => {
   const now = dayjs()
   const threeMonthsAgo = now.subtract(24, 'month')

@@ -1,5 +1,6 @@
-export default function Hold() {
-  return <>
-    홀드 페이지
-  </>;
+// import TimingPageClient from "@/app/[locale]/timing/TimingPageClient";
+import HoldingPageClient from "@/ui/page/HoldingPageClient";
+
+export default function Timing() {
+  return <HoldingPageClient />
 }

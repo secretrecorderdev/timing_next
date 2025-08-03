@@ -17,7 +17,7 @@ export default function Navbar() {
   // const pathWithoutLocale = pathname.replace(localeRegex, '/') || '/';
   console.log("패스 네임", pathname);
   return (
-    <nav className="flex space-x-12 pb-0 px-0 mt-4 border-b border-gray-200">
+    <nav className="flex space-x-12 pb-0 px-0 mt-4 mb-4 border-b border-gray-200">
       {navItems.map(({ label, href }) => (
         <Link
           key={href}
@@ -26,7 +26,7 @@ export default function Navbar() {
             pathWithoutLocale === href
               ? `${textColorMap["primary"].default} ${textColorMap["primary"].hover} ${textColorMap["primary"].active}
         border-b-2 border-primary`
-              : textColorMap["muted"].default
+              : `${textColorMap["muted"].default} ${textColorMap["muted"].hover} ${textColorMap["muted"].active}`
           }`}
         >
           {label}

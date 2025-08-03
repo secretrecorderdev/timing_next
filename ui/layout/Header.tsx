@@ -19,7 +19,7 @@ export function Header() {
             width={36}
             height={36}
             priority
-            className="w-auto h-9 me-2 bg-blue-500"
+            className="w-auto h-9 me-2 mt-2"
           />
           <Text as="span" size="xg" variant="heading">
             The

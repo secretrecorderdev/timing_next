@@ -30,7 +30,6 @@ export default async function RootLayout({
       <body className="antialiased max-w-screen-lg mx-auto px-4">
         <GlobalLoading />
         <QueryProvidersClient>
-          {children}
           <LanguageProvider>
             <Header />
             <NavBar />

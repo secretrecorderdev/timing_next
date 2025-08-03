@@ -1,0 +1,20 @@
+query GetHoldingList {
+  getHoldingList {
+    id
+    code
+    name
+    regDate
+    buyPrice
+    currentPrice
+    benefit
+    timingDate
+    buyDate
+    priceDate
+    buyState    
+    sellPrice
+    pairId
+    period
+    buyType
+    sellType
+  }
+}

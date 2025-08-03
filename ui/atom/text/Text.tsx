@@ -12,6 +12,7 @@ export type TextProps<T extends ElementType = 'p'> = {
   color?: ColorType
   className?: string
   children: React.ReactNode
+  onClick?: (event: React.MouseEvent<T, MouseEvent>) => void
 } & ComponentPropsWithoutRef<T>
 
 export const Text = <T extends ElementType = 'p'>({
@@ -21,6 +22,7 @@ export const Text = <T extends ElementType = 'p'>({
   color = 'default',
   className,
   children,
+  onClick,
   ...rest
 }: TextProps<T>) => {
   const Component = as || 'p'
@@ -42,8 +44,8 @@ export const Text = <T extends ElementType = 'p'>({
 
   const colorClass = [
     textColorMap[color]?.default,
-    textColorMap[color]?.hover,
-    textColorMap[color]?.active,
+    onClick ? textColorMap[color]?.hover : null,
+    onClick ? textColorMap[color]?.active : null,
   ]
     .filter(Boolean)
     .join(' ')

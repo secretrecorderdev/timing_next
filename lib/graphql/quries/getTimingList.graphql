@@ -11,8 +11,20 @@ query GetTimingList(
     offset: $offset
   ) {
     id
+    code
     name
-    timingDate
     regDate
+    buyPrice
+    currentPrice
+    benefit
+    timingDate
+    buyDate
+    priceDate
+    buyState    
+    sellPrice
+    pairId
+    period
+    buyType
+    sellType
   }
 }

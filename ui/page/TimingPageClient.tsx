@@ -1,12 +1,13 @@
 "use client";
 
-import dayjs from "dayjs";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useState, useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { request } from "graphql-request";
 import { useTimingDateRangeStore } from "@/store/timing/useTimingDateRangeStore";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import { getNextServerUrl } from "@/lib/utils/getNextServerUrl";
+import { mapToTradeItem } from "@/ui/sections/Trade/TradeList";
+import { TradeList } from "@/ui/sections/Trade/TradeList";
 import {
   GetTimingListQueryVariables,
   GetTimingListQuery,
@@ -25,7 +26,7 @@ export const fetchTimingList = async ({
   const variables: GetTimingListQueryVariables = {
     startDate,
     endDate,
-    limit: 50,
+    limit: 500,
     offset: pageParam,
   };
 
@@ -62,12 +63,14 @@ export default function TimingPageClient() {
         fetchTimingList({ pageParam, startDate, endDate }),
       getNextPageParam: (lastPage) =>
         lastPage.hasMore ? lastPage.nextOffset : undefined,
-      staleTime: 1000 * 60 * 5,
+      staleTime: 1000 * 60 * 60,
     });
   useEffect(() => {
     const isLoading = status === "pending" || isFetchingNextPage;
     console.log("데이터 확인", data)
     setLoading(isLoading);
   }, [status, isFetchingNextPage, setLoading]);
-  return <></>;
+  const tradeItems = data?.pages.flatMap((page) => page.items.map(mapToTradeItem)) ?? [];
+  // return <></>;
+  return <TradeList items={tradeItems} />;
 }

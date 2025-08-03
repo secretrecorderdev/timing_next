@@ -66,7 +66,10 @@ export const textColorMap: ColorScheme = {
     disabled: disabledTextClass,
   },
   default: {
-    default: "text-gray-800",
+    default: "text-gray-500",
+    hover: "hover:text-gray-900",
+    active: "active:text-cyan-900",
+    disabled: disabledTextClass,
   },
 };
 
@@ -108,7 +111,10 @@ export const bgColorMap: ColorScheme = {
     disabled: disabledBgClass,
   },
   default: {
-    default: "bg-gray-800"
+    default: "bg-gray-500",
+    hover: "hover:bg-gray-800",
+    active: "active:bg-gray-800",
+    disabled: disabledBgClass,
   }
 };
 
@@ -151,5 +157,8 @@ export const borderColorMap: ColorScheme = {
   },
   default: {
     default: "border-gray-800",
+    hover: "hover:border-gray-900",
+    active: "active:border-gray-900",
+    disabled: "border-gray-300",
   },
 };
