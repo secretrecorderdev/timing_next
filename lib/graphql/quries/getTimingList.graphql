@@ -1,14 +1,8 @@
 query GetTimingList(
-  $startDate: String!
-  $endDate: String!
-  $limit: Int
-  $offset: Int
+  $input: TimingListInput!
 ) {
   getTimingList(
-    startDate: $startDate
-    endDate: $endDate
-    limit: $limit
-    offset: $offset
+    input: $input
   ) {
     id
     code

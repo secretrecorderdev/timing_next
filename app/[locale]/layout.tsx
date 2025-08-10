@@ -8,6 +8,7 @@ import { Header } from "@/ui/layout/Header";
 import { QueryProvidersClient } from '../queryProvidersClient';
 import NavBar from "@/ui/layout/NavBar";
 import GlobalLoading from "@/ui/feedback/GlobalLoading";
+import { Notification } from "@/ui/components";
 
 // import { TabItem } from "@/ui/components/HorizontalTab/HorizontalTab.types";
 export const metadata: Metadata = baseMetadata;
@@ -28,9 +29,12 @@ export default async function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
       <body className="antialiased max-w-screen-lg mx-auto px-4">
+        <Notification />
         <GlobalLoading />
         <QueryProvidersClient>
+              <Notification />
           <LanguageProvider>
+                <Notification />
             <Header />
             <NavBar />
             {/* <HorizontalTab

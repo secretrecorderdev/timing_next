@@ -1,7 +1,7 @@
 "use client";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { request } from "graphql-request";
 import { useTimingDateRangeStore } from "@/store/timing/useTimingDateRangeStore";
 import { useLoadingStore } from "@/store/useLoadingStore";
@@ -12,7 +12,9 @@ import {
   GetTimingListQueryVariables,
   GetTimingListQuery,
   GetTimingListDocument,
+  TimingListInput
 } from "@/lib/graphql/generated";
+import { WebSocket } from "ws"; 
 
 export const fetchTimingList = async ({
   pageParam = 0,
@@ -23,11 +25,13 @@ export const fetchTimingList = async ({
   startDate: string;
   endDate: string;
 }) => {
-  const variables: GetTimingListQueryVariables = {
-    startDate,
-    endDate,
-    limit: 500,
-    offset: pageParam,
+   const variables: GetTimingListQueryVariables = {
+    input: {
+      startDate,
+      endDate,
+      limit: 500,
+      offset: pageParam,
+    } as TimingListInput,
   };
 
   try {
@@ -54,13 +58,15 @@ export default function TimingPageClient() {
   // const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
   const { startDate, endDate } = useTimingDateRangeStore();
   const { setLoading } = useLoadingStore();
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+
   console.log("날짜", { startDate, endDate });
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useInfiniteQuery({
       queryKey: ["timingList", startDate, endDate],
       initialPageParam: 0,
       queryFn: ({ pageParam = 0 }) =>
-        fetchTimingList({ pageParam, startDate, endDate }),
+        fetchTimingList({ pageParam, startDate, endDate }), // buyState 필터링 추가
       getNextPageParam: (lastPage) =>
         lastPage.hasMore ? lastPage.nextOffset : undefined,
       staleTime: 1000 * 60 * 60,
@@ -69,7 +75,7 @@ export default function TimingPageClient() {
     const isLoading = status === "pending" || isFetchingNextPage;
     console.log("데이터 확인", data)
     setLoading(isLoading);
-  }, [status, isFetchingNextPage, setLoading]);
+  }, [status, isFetchingNextPage, setLoading, data]);
   const tradeItems = data?.pages.flatMap((page) => page.items.map(mapToTradeItem)) ?? [];
   // return <></>;
   return <TradeList items={tradeItems} />;

@@ -17,16 +17,20 @@ export type Scalars = {
 
 export type Query = {
   __typename?: 'Query';
-  getHoldingList: Array<TimingListType>;
   getTimingList: Array<TimingListType>;
 };
 
 
 export type QueryGetTimingListArgs = {
-  endDate: Scalars['String']['input'];
-  limit?: Scalars['Int']['input'];
-  offset?: Scalars['Int']['input'];
-  startDate: Scalars['String']['input'];
+  input: TimingListInput;
+};
+
+export type TimingListInput = {
+  buyState?: InputMaybe<Scalars['Int']['input']>;
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type TimingListType = {
@@ -46,26 +50,15 @@ export type TimingListType = {
   regDate?: Maybe<Scalars['String']['output']>;
   sellPrice?: Maybe<Scalars['Int']['output']>;
   sellType?: Maybe<Scalars['String']['output']>;
-  state?: Maybe<Scalars['Int']['output']>;
   timingDate?: Maybe<Scalars['String']['output']>;
-  updDate?: Maybe<Scalars['String']['output']>;
 };
 
-export type GetHoldingListQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetHoldingListQuery = { __typename?: 'Query', getHoldingList: Array<{ __typename?: 'TimingListType', id: number, code?: string | null, name?: string | null, regDate?: string | null, buyPrice?: number | null, currentPrice?: number | null, benefit?: string | null, timingDate?: string | null, buyDate?: string | null, priceDate?: string | null, buyState?: number | null, sellPrice?: number | null, pairId?: number | null, period?: number | null, buyType?: string | null, sellType?: string | null }> };
-
 export type GetTimingListQueryVariables = Exact<{
-  startDate: Scalars['String']['input'];
-  endDate: Scalars['String']['input'];
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
+  input: TimingListInput;
 }>;
 
 
 export type GetTimingListQuery = { __typename?: 'Query', getTimingList: Array<{ __typename?: 'TimingListType', id: number, code?: string | null, name?: string | null, regDate?: string | null, buyPrice?: number | null, currentPrice?: number | null, benefit?: string | null, timingDate?: string | null, buyDate?: string | null, priceDate?: string | null, buyState?: number | null, sellPrice?: number | null, pairId?: number | null, period?: number | null, buyType?: string | null, sellType?: string | null }> };
 
 
-export const GetHoldingListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetHoldingList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getHoldingList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"regDate"}},{"kind":"Field","name":{"kind":"Name","value":"buyPrice"}},{"kind":"Field","name":{"kind":"Name","value":"currentPrice"}},{"kind":"Field","name":{"kind":"Name","value":"benefit"}},{"kind":"Field","name":{"kind":"Name","value":"timingDate"}},{"kind":"Field","name":{"kind":"Name","value":"buyDate"}},{"kind":"Field","name":{"kind":"Name","value":"priceDate"}},{"kind":"Field","name":{"kind":"Name","value":"buyState"}},{"kind":"Field","name":{"kind":"Name","value":"sellPrice"}},{"kind":"Field","name":{"kind":"Name","value":"pairId"}},{"kind":"Field","name":{"kind":"Name","value":"period"}},{"kind":"Field","name":{"kind":"Name","value":"buyType"}},{"kind":"Field","name":{"kind":"Name","value":"sellType"}}]}}]}}]} as unknown as DocumentNode<GetHoldingListQuery, GetHoldingListQueryVariables>;
-export const GetTimingListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTimingList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getTimingList"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"startDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"endDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"regDate"}},{"kind":"Field","name":{"kind":"Name","value":"buyPrice"}},{"kind":"Field","name":{"kind":"Name","value":"currentPrice"}},{"kind":"Field","name":{"kind":"Name","value":"benefit"}},{"kind":"Field","name":{"kind":"Name","value":"timingDate"}},{"kind":"Field","name":{"kind":"Name","value":"buyDate"}},{"kind":"Field","name":{"kind":"Name","value":"priceDate"}},{"kind":"Field","name":{"kind":"Name","value":"buyState"}},{"kind":"Field","name":{"kind":"Name","value":"sellPrice"}},{"kind":"Field","name":{"kind":"Name","value":"pairId"}},{"kind":"Field","name":{"kind":"Name","value":"period"}},{"kind":"Field","name":{"kind":"Name","value":"buyType"}},{"kind":"Field","name":{"kind":"Name","value":"sellType"}}]}}]}}]} as unknown as DocumentNode<GetTimingListQuery, GetTimingListQueryVariables>;
+export const GetTimingListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTimingList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TimingListInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getTimingList"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"regDate"}},{"kind":"Field","name":{"kind":"Name","value":"buyPrice"}},{"kind":"Field","name":{"kind":"Name","value":"currentPrice"}},{"kind":"Field","name":{"kind":"Name","value":"benefit"}},{"kind":"Field","name":{"kind":"Name","value":"timingDate"}},{"kind":"Field","name":{"kind":"Name","value":"buyDate"}},{"kind":"Field","name":{"kind":"Name","value":"priceDate"}},{"kind":"Field","name":{"kind":"Name","value":"buyState"}},{"kind":"Field","name":{"kind":"Name","value":"sellPrice"}},{"kind":"Field","name":{"kind":"Name","value":"pairId"}},{"kind":"Field","name":{"kind":"Name","value":"period"}},{"kind":"Field","name":{"kind":"Name","value":"buyType"}},{"kind":"Field","name":{"kind":"Name","value":"sellType"}}]}}]}}]} as unknown as DocumentNode<GetTimingListQuery, GetTimingListQueryVariables>;
