@@ -13,7 +13,7 @@ export const baseMetadata: Metadata = {
     siteName: '더타이밍',
     images: [
       {
-        url: '/assets/images/lagacy/main_og_image.png',
+        url: '/assets/images/common/timing_og_image.png',
         width: 1200,
         height: 630,
         alt: '더타이밍 대표 이미지',
