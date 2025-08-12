@@ -10,9 +10,6 @@ export default function Notification() {
   const [open, setOpen] = useState(false);
   const hideTimer = useRef<number | null>(null);
 
-// 실제로 날려봐야 하는 타이밍인가 ㅎㅎ
-// 레스트부터 차례대로
-
   useEffect(() => {
     if (!lastMsg) return;
     setOpen(true);

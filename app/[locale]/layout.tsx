@@ -12,7 +12,7 @@ import { Notification } from "@/ui/components";
 
 // import { TabItem } from "@/ui/components/HorizontalTab/HorizontalTab.types";
 export const metadata: Metadata = baseMetadata;
-
+import RealtimeBridge from '@/app/_bridges/RealtimeBridge';
 
 export default async function RootLayout({
   children,
@@ -29,12 +29,13 @@ export default async function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
       <body className="antialiased max-w-screen-lg mx-auto px-4">
+        <RealtimeBridge />
         <Notification />
         <GlobalLoading />
         <QueryProvidersClient>
-              <Notification />
+          <Notification />
           <LanguageProvider>
-                <Notification />
+            <Notification />
             <Header />
             <NavBar />
             {/* <HorizontalTab
