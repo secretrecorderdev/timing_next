@@ -1,5 +1,5 @@
 
-import LanguageClient from '@/ui/page/LanguageClient';
+import LanguageClient from '@/domain/language/components/LanguageClient';
 
 
 export default function Language() {
