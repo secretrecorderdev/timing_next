@@ -9,18 +9,22 @@ interface TradeListProps {
 }
 
 export const mapToTradeItem = (item: TimingListItem) => {
-  const buyDate = item.buyDate ?? "";
-  const holdingDays = getHoldingDaysFrom(buyDate);
+  const rawBuyDate = item.buyDate ?? item.timingDate ?? item.regDate ?? "";
+  const buyDate = String(rawBuyDate).replace(/[^0-9]/g, "").slice(0, 12);
+  const holdingDays = buyDate ? getHoldingDaysFrom(buyDate) : 0;
+  const currentPrice = item.currentPrice && item.currentPrice > 0
+    ? item.currentPrice
+    : item.sellPrice ?? item.buyPrice ?? 0;
 
   return {
     code: item.code ?? "-",
     name: item.name ?? "-",
-    buyPrice: item.buyPrice ?? 0,
-    currentPrice: item.currentPrice ?? 0,
-    buyState: item.buyState ?? 0, // Assuming buyState is optional
+    buyPrice: item.buyPrice ?? item.sellPrice ?? 0,
+    currentPrice,
+    buyState: item.buyState ?? 0,
     holdingDays,
-    buyDateTime: formatDateTime(buyDate),
-    profit: parseFloat(item.benefit ?? "0"),
+    buyDateTime: buyDate ? formatDateTime(buyDate) : "-",
+    profit: Number.parseFloat(String(item.benefit ?? 0)) || 0,
   };
 };
 
