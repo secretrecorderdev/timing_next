@@ -12,16 +12,16 @@ const navItems = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const pathWithoutLocale = pathname.replace(/^\/(ko|en)/, "");
-  // const localeRegex = /^\/(ko|en)(\/|$)/;
-  // const pathWithoutLocale = pathname.replace(localeRegex, '/') || '/';
-  console.log("패스 네임", pathname);
+  const localeMatch = pathname.match(/^\/(ko|en)(?=\/|$)/);
+  const localePrefix = localeMatch?.[0] ?? "";
+  const pathWithoutLocale = pathname.replace(/^\/(ko|en)/, "") || "/";
+
   return (
     <nav className="flex space-x-12 pb-0 px-0 mt-4 mb-4 border-b border-gray-200">
       {navItems.map(({ label, href }) => (
         <Link
           key={href}
-          href={href}
+          href={`${localePrefix}${href}`}
           className={`text-xl font-medium pb-[10px] ${
             pathWithoutLocale === href
               ? `${textColorMap["primary"].default} ${textColorMap["primary"].hover} ${textColorMap["primary"].active}
