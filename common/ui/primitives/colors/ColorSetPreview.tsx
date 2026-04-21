@@ -1,4 +1,4 @@
-import { ColorClassMap } from "../../colors";
+import { ColorClassMap } from "@/common/ui/colors";
 
 interface ColorSetPreviewProps {
   label: string;

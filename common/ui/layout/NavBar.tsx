@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { textColorMap } from "../colors";
+import { textColorMap } from "@/common/ui/colors";
 
 const navItems = [
   { label: "실시간 신호", href: "/timing" },
