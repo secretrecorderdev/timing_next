@@ -112,8 +112,8 @@ export function connectSocket(
 }
 
 /** 안전 전송 */
-export function sendMessage<T extends SocketMessage>(msg: T) {
-  const payload = JSON.stringify(msg);
+export function sendMessage<T extends SocketMessage>(_msg: T) {
+  const payload = JSON.stringify(_msg);
   if (!socket) {
     console.warn('WS not initialized. Buffering message.');
     msgBuffer.push(payload);

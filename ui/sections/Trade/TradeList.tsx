@@ -1,14 +1,14 @@
 import { memo } from "react";
 import { TradeCard } from "./TradeCard";
-import { GetTimingListQuery } from '@/lib/graphql/generated'
 import { formatDateTime, getHoldingDaysFrom } from "@/lib/utils/CommonUtils";
+import type { TimingListItem } from "@/lib/types/timing";
 import { TradeItem } from "@/types/trade";
 
 interface TradeListProps {
   items: TradeItem[];
 }
 
-export const mapToTradeItem = (item: GetTimingListQuery["getTimingList"][0]) => {
+export const mapToTradeItem = (item: TimingListItem) => {
   const buyDate = item.buyDate ?? "";
   const holdingDays = getHoldingDaysFrom(buyDate);
 

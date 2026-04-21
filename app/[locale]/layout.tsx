@@ -2,25 +2,23 @@ import type { Metadata } from "next";
 
 import "@/app/globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
-import { LocaleType } from "@/context/LanguageContext";
 import { baseMetadata } from "@/lib/metadata/metadata";
 import { Header } from "@/ui/layout/Header";
-import { QueryProvidersClient } from '../queryProvidersClient';
 import NavBar from "@/ui/layout/NavBar";
 import GlobalLoading from "@/ui/feedback/GlobalLoading";
 import { Notification } from "@/ui/components";
+import RealtimeBridge from "@/app/_bridges/RealtimeBridge";
 
 // import { TabItem } from "@/ui/components/HorizontalTab/HorizontalTab.types";
 export const metadata: Metadata = baseMetadata;
-import RealtimeBridge from '@/app/_bridges/RealtimeBridge';
 
 export default async function RootLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: LocaleType }>
-}){
+  params: Promise<{ locale: string }>;
+}) {
   const { locale } = await params;
 
   return (
@@ -32,18 +30,16 @@ export default async function RootLayout({
         <RealtimeBridge />
         <Notification />
         <GlobalLoading />
-        <QueryProvidersClient>
+        <Notification />
+        <LanguageProvider>
           <Notification />
-          <LanguageProvider>
-            <Notification />
-            <Header />
-            <NavBar />
-            {/* <HorizontalTab
+          <Header />
+          <NavBar />
+          {/* <HorizontalTab
             tabs={tabs}
           /> */}
-            {children}
-          </LanguageProvider>
-        </QueryProvidersClient>
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

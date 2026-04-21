@@ -1,82 +1,44 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { request } from "graphql-request";
+import { fetchTimingList } from "@/lib/api/timing";
 import { useTimingDateRangeStore } from "@/store/timing/useTimingDateRangeStore";
 import { useLoadingStore } from "@/store/useLoadingStore";
-import { getNextServerUrl } from "@/lib/utils/getNextServerUrl";
-import { mapToTradeItem } from "@/ui/sections/Trade/TradeList";
-import { TradeList } from "@/ui/sections/Trade/TradeList";
-import {
-  GetTimingListQueryVariables,
-  GetTimingListQuery,
-  GetTimingListDocument,
-  TimingListInput
-} from "@/lib/graphql/generated";
-import { WebSocket } from "ws"; 
-
-export const fetchTimingList = async ({
-  pageParam = 0,
-  startDate,
-  endDate,
-}: {
-  pageParam?: number;
-  startDate: string;
-  endDate: string;
-}) => {
-   const variables: GetTimingListQueryVariables = {
-    input: {
-      startDate,
-      endDate,
-      limit: 500,
-      offset: pageParam,
-    } as TimingListInput,
-  };
-
-  try {
-    const data = await request<GetTimingListQuery, GetTimingListQueryVariables>(
-      getNextServerUrl("/api/graphql"),
-      GetTimingListDocument,
-      variables
-    );
-
-    console.log("📦 타이밍 데이터:", data);
-
-    return {
-      items: data.getTimingList,
-      nextOffset: pageParam + data.getTimingList.length,
-      hasMore: data.getTimingList.length > 0,
-    };
-  } catch (error) {
-    console.error("GraphQL 요청 실패:", error);
-    throw error;
-  }
-};
+import { mapToTradeItem, TradeList } from "@/ui/sections/Trade/TradeList";
 
 export default function TimingPageClient() {
-  // const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
   const { startDate, endDate } = useTimingDateRangeStore();
   const { setLoading } = useLoadingStore();
-  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [items, setItems] = useState<ReturnType<typeof mapToTradeItem>[]>([]);
 
-  console.log("날짜", { startDate, endDate });
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
-    useInfiniteQuery({
-      queryKey: ["timingList", startDate, endDate],
-      initialPageParam: 0,
-      queryFn: ({ pageParam = 0 }) =>
-        fetchTimingList({ pageParam, startDate, endDate }), // buyState 필터링 추가
-      getNextPageParam: (lastPage) =>
-        lastPage.hasMore ? lastPage.nextOffset : undefined,
-      staleTime: 1000 * 60 * 60,
-    });
   useEffect(() => {
-    const isLoading = status === "pending" || isFetchingNextPage;
-    console.log("데이터 확인", data)
-    setLoading(isLoading);
-  }, [status, isFetchingNextPage, setLoading, data]);
-  const tradeItems = data?.pages.flatMap((page) => page.items.map(mapToTradeItem)) ?? [];
-  // return <></>;
-  return <TradeList items={tradeItems} />;
+    let cancelled = false;
+
+    const load = async () => {
+      setLoading(true);
+      try {
+        const result = await fetchTimingList({ startDate, endDate, limit: 500, offset: 0 });
+        if (!cancelled) {
+          setItems(result.items.map(mapToTradeItem));
+        }
+      } catch (error) {
+        console.error("Failed to load timing list", error);
+        if (!cancelled) {
+          setItems([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [endDate, setLoading, startDate]);
+
+  return <TradeList items={items} />;
 }
