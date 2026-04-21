@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchTimingList } from "@/domain/timing/api/timing";
 import { useTimingDateRangeStore } from "@/domain/timing/store/useTimingDateRangeStore";
-import { useLoadingStore } from "@/store/useLoadingStore";
+import { useLoadingStore } from "@/common/store/useLoadingStore";
 import { mapToTradeItem, TradeList } from "@/domain/timing/components/TradeList";
 
 export default function TimingPageClient() {

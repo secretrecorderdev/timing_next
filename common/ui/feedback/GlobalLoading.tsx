@@ -1,6 +1,6 @@
 "use client";
 
-import { useLoadingStore } from "@/store/useLoadingStore";
+import { useLoadingStore } from "@/common/store/useLoadingStore";
 import GlobalLoadingSpinner from "./GlobalLoadingSpinner";
 
 export default function GlobalLoading() {

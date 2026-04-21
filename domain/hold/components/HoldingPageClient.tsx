@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fetchHoldingList } from "@/domain/timing/api/timing";
-import { useLoadingStore } from "@/store/useLoadingStore";
+import { useLoadingStore } from "@/common/store/useLoadingStore";
 import { mapToTradeItem, TradeList } from "@/domain/timing/components/TradeList";
 
 export default function HoldingPageClient() {
