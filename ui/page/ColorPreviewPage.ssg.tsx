@@ -1,7 +1,7 @@
 export const dynamic = "force-static"; 
 
 import { textColorMap, bgColorMap } from "@/common/ui/colors";
-import { ColorSetPreview } from "@/common/ui/atom/colors/ColorSetPreview";
+import { ColorSetPreview } from "@/common/ui/primitives/colors/ColorSetPreview";
 
 export default function ColorPreviewPage() {
   const colorKeys = Object.keys({ ...textColorMap, ...bgColorMap });

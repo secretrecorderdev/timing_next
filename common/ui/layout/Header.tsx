@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 import Image from "next/image";
-import { Text } from '../atom/text/Text';
+import { Text } from '../primitives/text/Text';
 
 export function Header() {
   return (

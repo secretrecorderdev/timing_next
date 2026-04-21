@@ -2,7 +2,7 @@ import { memo } from "react";
 import { TradeCardTitle } from "./TradeCardTitle";
 import { TradeCardInfo } from "./TradeCardInfo";
 import { TradeCardActions } from "./TradeCardActions";
-import { Card } from "@/common/ui/atom/card/Card";
+import { Card } from "@/common/ui/primitives/card/Card";
 import { TradeItem } from "@/common/types/trade";
 import { cn } from "@/common/lib/CommonUtils";
 

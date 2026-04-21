@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/common/context/LanguageContext';
-import { Button } from "@/common/ui/atom/button/Button";
-import { Text } from '@/common/ui/atom/text/Text';
+import { Button } from "@/common/ui/primitives/button/Button";
+import { Text } from '@/common/ui/primitives/text/Text';
 
 export default function LanguageClient() {
   const { locale, setLocale } = useLanguage();
