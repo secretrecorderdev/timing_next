@@ -31,8 +31,8 @@ export const mapToTradeItem = (item: TimingListItem) => {
 export const TradeList = memo(({ items }: TradeListProps) => {
   return (
     <div className="flex flex-col gap-4">
-      {items.map((item) => (
-        <TradeCard key={`${item.code}-${item.buyDateTime}-${item.buyState}`} item={item} />
+      {items.map((item, index) => (
+        <TradeCard key={`${item.code}-${item.buyDateTime}-${item.buyState}-${item.buyPrice}-${index}`} item={item} />
       ))}
     </div>
   );
