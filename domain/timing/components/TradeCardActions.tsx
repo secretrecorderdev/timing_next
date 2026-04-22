@@ -5,7 +5,7 @@ import { SiNaver } from "react-icons/si";
 import { BsGraphUp } from "react-icons/bs"; // 차트 보기
 import Image from "next/image"; // 이미지 컴포넌트
 
-export const TradeCardActions = memo(() => {
+export const TradeCardActions = memo(function TradeCardActions() {
   return (
     <div className="flex justify-end gap-3 mt-3 text-lg">
       <BsGraphUp title="차트 보기" className="cursor-pointer text-gray-500" />

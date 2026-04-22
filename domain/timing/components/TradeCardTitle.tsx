@@ -36,12 +36,14 @@ const getBuyStateText = (buyState: number, buyPrice: number) => {
 };
 
 export const TradeCardTitle = memo(
-  ({ stockCode, stockName, buyPrice, buyState }: TradeCardTitleProps) => (
+  function TradeCardTitle({ stockCode, stockName, buyPrice, buyState }: TradeCardTitleProps) {
+    return (
     <div className="text-lg font-medium">
       [{stockCode}] {stockName}{" "}
       <span className={getBuyStateColor(buyState)}>
         {getBuyStateText(buyState, buyPrice)}
       </span>
     </div>
-  )
+    );
+  }
 );

@@ -28,7 +28,7 @@ export const mapToTradeItem = (item: TimingListItem) => {
   };
 };
 
-export const TradeList = memo(({ items }: TradeListProps) => {
+export const TradeList = memo(function TradeList({ items }: TradeListProps) {
   return (
     <div className="flex flex-col gap-4">
       {items.map((item, index) => (

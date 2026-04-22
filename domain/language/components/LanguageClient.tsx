@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/common/context/LanguageContext';
 import { Button } from "@/common/ui/primitives/button/Button";
@@ -9,15 +8,10 @@ import { Text } from '@/common/ui/primitives/text/Text';
 export default function LanguageClient() {
   const { locale, setLocale } = useLanguage();
   const { t } = useTranslation();
-  const [selectedLocale, setSelectedLocale] = useState(locale);
-
-  useEffect(() => {
-    setSelectedLocale(locale); // 외부 변경에도 반응
-  }, [locale]);
+  const selectedLocale = locale;
 
   const handleClick = (lang: 'ko' | 'en') => {
     setLocale(lang);
-    setSelectedLocale(lang); // 선택된 언어 상태 갱신
   };
 
   const baseBtn =

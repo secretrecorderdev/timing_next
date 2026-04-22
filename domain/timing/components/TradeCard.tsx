@@ -10,7 +10,7 @@ interface TradeCardProps {
   item: TradeItem;
 }
 
-export const TradeCard = memo(({ item }: TradeCardProps) => {
+export const TradeCard = memo(function TradeCard({ item }: TradeCardProps) {
   const isProfit = item.profit >= 0;
   const isZero = item.profit === 0;
 
