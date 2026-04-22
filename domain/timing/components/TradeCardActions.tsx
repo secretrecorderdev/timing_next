@@ -19,6 +19,7 @@ export const TradeCardActions = memo(() => {
         alt="Toss"
         width={20}
         height={20}
+        style={{ width: "auto", height: "auto" }}
       />
       {/* 토스는 직접 svg 추가 필요 */}
     </div>

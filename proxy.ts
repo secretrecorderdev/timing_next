@@ -11,20 +11,18 @@ function getLocaleFromHeader(request: NextRequest): string {
   return DEFAULT_LOCALE;
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 정적 파일, API, locale 경로는 무시
   if (
     PUBLIC_FILE.test(pathname) ||
     pathname.startsWith('/api') ||
     SUPPORTED_LOCALES.some((locale) => pathname.startsWith(`/${locale}`))
   ) {
-    return;
+    return NextResponse.next();
   }
 
   const locale = getLocaleFromHeader(request);
-
   const url = request.nextUrl.clone();
   url.pathname = `/${locale}${pathname}`;
   return NextResponse.redirect(url);
