@@ -1,3 +1,4 @@
+import { apiRequest } from "@/common/api/request";
 import type { TimingListInput, TimingListItem } from "@/domain/timing/types/timing";
 
 export interface TimingListResponse {
@@ -7,23 +8,6 @@ export interface TimingListResponse {
 }
 
 const DEFAULT_LIMIT = 500;
-
-async function fetchJson<T>(input: RequestInfo | URL, init?: RequestInit): Promise<T> {
-  const response = await fetch(input, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers ?? {}),
-    },
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
-  }
-
-  return response.json() as Promise<T>;
-}
 
 function normalizeItems(payload: unknown): TimingListItem[] {
   if (Array.isArray(payload)) return payload as TimingListItem[];
@@ -42,15 +26,15 @@ function normalizeItems(payload: unknown): TimingListItem[] {
 }
 
 export async function fetchTimingList(input: TimingListInput): Promise<TimingListResponse> {
-  const payload = await fetchJson<unknown>("/api/timing", {
+  const payload = await apiRequest<unknown, Record<string, unknown>>("/api/timing", {
     method: "POST",
-    body: JSON.stringify({
+    body: {
       startDate: input.startDate?.slice(0, 8),
       endDate: input.endDate?.slice(0, 8),
       buyState: input.buyState,
       limit: input.limit ?? DEFAULT_LIMIT,
       offset: input.offset ?? 0,
-    }),
+    },
   });
 
   const items = normalizeItems(payload);
@@ -64,13 +48,13 @@ export async function fetchTimingList(input: TimingListInput): Promise<TimingLis
 }
 
 export async function fetchHoldingList(input: Pick<TimingListInput, "buyState" | "limit" | "offset"> = {}): Promise<TimingListResponse> {
-  const payload = await fetchJson<unknown>("/api/hold", {
+  const payload = await apiRequest<unknown, Record<string, unknown>>("/api/hold", {
     method: "POST",
-    body: JSON.stringify({
+    body: {
       buyState: input.buyState ?? 1,
       limit: input.limit ?? DEFAULT_LIMIT,
       offset: input.offset ?? 0,
-    }),
+    },
   });
 
   const items = normalizeItems(payload);
