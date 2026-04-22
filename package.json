@@ -42,7 +42,7 @@
     "typescript": "^5.5",
     "webpack": "^5.100.2"
   },
-  "packageManager": "yarn@4.9.2",
+  "packageManager": "pnpm@10.33.0",
   "engines": {
     "node": ">=20"
   }
