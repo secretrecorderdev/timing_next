@@ -1,7 +1,6 @@
 
-import LanguageClient from '@/domain/language/components/LanguageClient';
-
+import LanguagePageClient from '@/domain/language/components/LanguagePageClient';
 
 export default function Language() {
-  return <LanguageClient />;
+  return <LanguagePageClient />;
 }

@@ -1,2 +1,2 @@
-export { default as HorizontalTab } from "@/common/ui/components/HorizontalTab";
-export type { TabItem } from "@/common/ui/components/HorizontalTab";
+export { default as HorizontalTab } from "@/shared/ui/components/HorizontalTab";
+export type { TabItem } from "@/shared/ui/components/HorizontalTab";

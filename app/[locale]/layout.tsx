@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 
 import "@/app/globals.css";
-import { LanguageProvider } from "@/common/context/LanguageContext";
-import { baseMetadata } from "@/common/lib/metadata";
-import { Header } from "@/common/ui/layout/Header";
-import NavBar from "@/common/ui/layout/NavBar";
-import GlobalLoading from "@/common/ui/feedback/GlobalLoading";
+import { LanguageProvider } from "@/shared/context/LanguageContext";
+import { baseMetadata } from "@/shared/lib/metadata";
+import { Header } from "@/shared/ui/layout/Header";
+import NavBar from "@/shared/ui/layout/NavBar";
+import GlobalLoading from "@/shared/ui/feedback/GlobalLoading";
 // import { TabItem } from "@/ui/components/HorizontalTab/HorizontalTab.types";
 export const metadata: Metadata = baseMetadata;
 
