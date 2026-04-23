@@ -11,6 +11,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@tanstack/react-virtual": "^3.13.24",
     "axios": "^1.13.1",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.20",

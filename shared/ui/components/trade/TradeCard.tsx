@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { TradeCardTitle } from "./TradeCardTitle";
 import { TradeCardInfo } from "./TradeCardInfo";
 import { TradeCardActions } from "./TradeCardActions";
@@ -9,7 +10,7 @@ interface TradeCardProps {
   item: TradeItem;
 }
 
-export function TradeCard({ item }: TradeCardProps) {
+function TradeCardComponent({ item }: TradeCardProps) {
   const isProfit = item.profit >= 0;
   const isZero = item.profit === 0;
 
@@ -38,8 +39,10 @@ export function TradeCard({ item }: TradeCardProps) {
           holdingDays={item.holdingDays}
           buyDateTime={item.buyDateTime}
         />
-        <TradeCardActions />
+        <TradeCardActions code={item.code} />
       </div>
     </Card>
   );
 }
+
+export const TradeCard = memo(TradeCardComponent);
