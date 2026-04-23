@@ -25,7 +25,7 @@ export function TradeList({
     getScrollElement: () => parentRef.current,
     estimateSize: () => estimateSize,
     overscan,
-    gap: 16,
+    gap: 8,
   });
 
   const virtualItems = rowVirtualizer.getVirtualItems();

@@ -11,7 +11,7 @@ const navItems = [
 ];
 
 export default function Navbar() {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "/ko/timing";
   const localeMatch = pathname.match(/^\/(ko|en)(?=\/|$)/);
   const localePrefix = localeMatch?.[0] ?? "";
   const pathWithoutLocale = pathname.replace(/^\/(ko|en)/, "") || "/";
@@ -22,7 +22,7 @@ export default function Navbar() {
         <Link
           key={href}
           href={`${localePrefix}${href}`}
-          className={`text-xl font-medium pb-[10px] ${
+          className={`px-2 text-xl font-medium pb-[10px] ${
             pathWithoutLocale === href
               ? `${textColorMap["primary"].default} ${textColorMap["primary"].hover} ${textColorMap["primary"].active}
         border-b-2 border-primary`
