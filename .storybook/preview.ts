@@ -1,4 +1,4 @@
-import type { Preview } from '@storybook/react';
+import type { Preview } from '@storybook/nextjs-vite';
 import '../app/globals.css';
 
 const preview: Preview = {
@@ -17,6 +17,9 @@ const preview: Preview = {
         { name: 'slate', value: '#0f172a' },
         { name: 'gray', value: '#f3f4f6' },
       ],
+    },
+    a11y: {
+      test: 'todo',
     },
   },
 };
