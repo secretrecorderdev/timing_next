@@ -26,7 +26,7 @@ function normalizeItems(payload: unknown): TimingListItem[] {
 }
 
 export async function fetchTimingList(input: TimingListInput): Promise<TimingListResponse> {
-  const payload = await apiRequest<unknown, Record<string, unknown>>("/stock/getTimingList", {
+  const payload = await apiRequest<unknown, Record<string, unknown>>("/timing/timing-list", {
     method: "POST",
     body: {
       startDate: input.startDate?.slice(0, 8),

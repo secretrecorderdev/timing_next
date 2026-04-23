@@ -32,7 +32,7 @@ function normalizeItems(payload: unknown): TimingListItem[] {
 }
 
 export async function fetchHoldingList(input: HoldingListInput = {}): Promise<HoldingListResponse> {
-  const payload = await apiRequest<unknown, Record<string, unknown>>("/stock/getHoldList", {
+  const payload = await apiRequest<unknown, Record<string, unknown>>("/timing/timing-hold-list", {
     method: "POST",
     body: {
       buyState: input.buyState ?? 1,
