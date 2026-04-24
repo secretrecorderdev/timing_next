@@ -9,6 +9,7 @@ type TradeItem = ReturnType<typeof mapToTradeItem>;
 export function useTimingTradeItems(input: TimingListInput) {
   const { setGlobalLoading } = useLoadingStore();
   const [items, setItems] = useState<TradeItem[]>([]);
+  const [rawItems, setRawItems] = useState<Awaited<ReturnType<typeof fetchTimingList>>["items"]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -26,11 +27,13 @@ export function useTimingTradeItems(input: TimingListInput) {
         });
 
         if (!cancelled) {
+          setRawItems(result.items);
           setItems(result.items.map(mapToTradeItem));
         }
       } catch (error) {
         console.error("Failed to load timing list", error);
         if (!cancelled) {
+          setRawItems([]);
           setItems([]);
         }
       } finally {
@@ -47,5 +50,5 @@ export function useTimingTradeItems(input: TimingListInput) {
     };
   }, [input.buyState, input.endDate, input.limit, input.offset, input.startDate, setGlobalLoading]);
 
-  return { items };
+  return { items, rawItems };
 }

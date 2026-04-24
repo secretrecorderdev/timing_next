@@ -29,8 +29,8 @@ export async function fetchTimingList(input: TimingListInput): Promise<TimingLis
   const payload = await apiRequest<unknown, Record<string, unknown>>("/timing/timing-list", {
     method: "POST",
     body: {
-      startDate: input.startDate?.slice(0, 8),
-      endDate: input.endDate?.slice(0, 8),
+      startDate: input.startDate,
+      endDate: input.endDate,
       buyState: input.buyState,
       limit: input.limit ?? DEFAULT_LIMIT,
       offset: input.offset ?? 0,

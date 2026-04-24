@@ -1,15 +1,12 @@
 import { create } from "zustand";
 import dayjs from "dayjs";
+import { formatDateTimeTo12Digits } from "@/shared/lib/dateRange";
 
 interface DateRangeStore {
   startDate: string;
   endDate: string;
   setRange: (start: string, end: string) => void;
   resetRange: () => void;
-}
-
-function formatDateTimeTo12Digits(date: dayjs.Dayjs): string {
-  return date.format("YYYYMMDDHHmm");
 }
 
 function getDefaultRange() {
