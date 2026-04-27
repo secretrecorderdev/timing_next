@@ -17,12 +17,13 @@ export default function Navbar() {
   const pathWithoutLocale = pathname.replace(/^\/(ko|en)/, "") || "/";
 
   return (
-    <nav className="flex space-x-12 pb-0 px-0 mt-4 mb-4 border-b border-gray-200">
+    <nav className="-mx-3 mb-4 mt-4 overflow-x-auto border-b border-gray-200 px-3 pb-0 sm:mx-0 sm:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex min-w-max gap-6 sm:gap-12">
       {navItems.map(({ label, href }) => (
         <Link
           key={href}
           href={`${localePrefix}${href}`}
-          className={`px-2 text-xl font-medium pb-[10px] ${
+          className={`shrink-0 px-1 pb-[10px] text-lg font-medium sm:px-2 sm:text-xl ${
             pathWithoutLocale === href
               ? `${textColorMap["primary"].default} ${textColorMap["primary"].hover} ${textColorMap["primary"].active}
         border-b-2 border-primary`
@@ -32,6 +33,7 @@ export default function Navbar() {
           {label}
         </Link>
       ))}
+      </div>
     </nav>
   );
 }
