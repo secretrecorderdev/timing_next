@@ -65,7 +65,7 @@ export default function CommonModal({
     >
       <div
         className={clsx(
-          "w-full max-w-md rounded-2xl bg-white shadow-2xl",
+          "flex max-h-[min(88dvh,720px)] w-full max-w-md flex-col rounded-2xl bg-white shadow-2xl",
           panelClassName,
         )}
         onClick={(event) => event.stopPropagation()}
@@ -82,12 +82,12 @@ export default function CommonModal({
           </div>
         ) : null}
 
-        <div className={clsx("px-6 py-5", contentClassName)}>{children}</div>
+        <div className={clsx("overflow-y-auto px-4 py-5 sm:px-6", contentClassName)}>{children}</div>
 
         {hasFooter ? (
           <div
             className={clsx(
-              "flex justify-end gap-3 border-t border-gray-100 px-6 py-4",
+              "flex flex-col-reverse gap-2 border-t border-gray-100 px-4 py-4 sm:flex-row sm:justify-end sm:gap-3 sm:px-6",
               footerClassName,
             )}
           >

@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { TradeList } from "@/shared/ui/components/trade/TradeList";
+import { TradeDetailModal } from "@/shared/ui/components/trade/TradeDetailModal";
+import type { TradeItem } from "@/shared/ui/components/trade/trade.types";
 import { DateRangeFilter } from "@/shared/ui/components/date-range/DateRangeFilter";
 import { PeriodSummaryCard } from "@/shared/ui/components/summary/PeriodSummaryCard";
 import CommonModal from "@/shared/ui/components/common/CommonModal";
@@ -12,8 +14,9 @@ import { useTimingDateRangeStore } from "@/domain/timing/store/useTimingDateRang
 
 export default function TimingPageClient() {
   const { startDate, endDate, setRange } = useTimingDateRangeStore();
-  const { items, rawItems } = useTimingTradeItems({ startDate, endDate, limit: 500, offset: 0 });
+  const { items, rawItems, summary } = useTimingTradeItems({ startDate, endDate, limit: 500, offset: 0 });
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
+  const [selectedTradeItem, setSelectedTradeItem] = useState<TradeItem | null>(null);
 
   const totalProfit = useMemo(
     () => items.reduce((sum, item) => sum + item.profit, 0),
@@ -60,12 +63,19 @@ export default function TimingPageClient() {
         label: "총 보유기간",
         value: `${totalHoldingDays.toLocaleString()}일`,
       },
+      {
+        label: "코스피 변동률",
+        value:
+          summary?.kospiBenefit == null
+            ? "-"
+            : `${Number(summary.kospiBenefit) > 0 ? "+" : ""}${Number(summary.kospiBenefit).toFixed(2)}% (${summary.startDateKospiValue ?? "-"} → ${summary.endDateKospiValue ?? "-"})`,
+      },
     ],
-    [annualizedProfit, endDate, startDate, totalHoldingDays, totalProfit],
+    [annualizedProfit, endDate, startDate, summary, totalHoldingDays, totalProfit],
   );
 
   return (
-    <div className="pb-4">
+    <div className="pb-10 sm:pb-12">
       <DateRangeFilter
         startDate={startDate}
         endDate={endDate}
@@ -88,10 +98,15 @@ export default function TimingPageClient() {
       >
         <CommonDetailGrid items={summaryDetailItems} />
       </CommonModal>
-      <div className="mb-3 ml-2 text-sm font-semibold text-gray-700">
+      <div className="mb-3 ml-1 text-sm font-semibold text-gray-700 sm:ml-2">
         총 {items.length.toLocaleString()}개
       </div>
-      <TradeList items={items} />
+      <TradeList items={items} onItemClick={setSelectedTradeItem} />
+      <TradeDetailModal
+        open={selectedTradeItem != null}
+        item={selectedTradeItem}
+        onClose={() => setSelectedTradeItem(null)}
+      />
     </div>
   );
 }

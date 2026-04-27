@@ -1,6 +1,6 @@
 
+import ItemPageClient from "@/domain/item/ItemPageClient";
+
 export default function Item() {
-  return <>
-    아이템 페이지
-  </>;
+  return <ItemPageClient />;
 }

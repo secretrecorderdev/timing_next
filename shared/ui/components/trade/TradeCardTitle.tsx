@@ -2,6 +2,7 @@ interface TradeCardTitleProps {
   stockCode: string;
   stockName: string;
   buyPrice: number;
+  sellPrice?: number | null;
   buyState: number;
 }
 
@@ -19,26 +20,26 @@ function getBuyStateColor(buyState: number) {
   }
 }
 
-function getBuyStateText(buyState: number, buyPrice: number) {
+function getBuyStateText(buyState: number, buyPrice: number, sellPrice?: number | null) {
   switch (buyState) {
     case 1:
       return `매수(${buyPrice.toLocaleString()}원)`;
     case 2:
-      return "매수(매도됨)";
+      return `매수(${buyPrice.toLocaleString()}원, 매도됨)`;
     case 3:
-      return `매도(${buyPrice.toLocaleString()}원)`;
+      return `매도(${(sellPrice ?? buyPrice).toLocaleString()}원)`;
     case 0:
     default:
       return "매수(미확정)";
   }
 }
 
-export function TradeCardTitle({ stockCode, stockName, buyPrice, buyState }: TradeCardTitleProps) {
+export function TradeCardTitle({ stockCode, stockName, buyPrice, sellPrice, buyState }: TradeCardTitleProps) {
   return (
-    <div className="text-lg font-medium">
+    <div className="break-words text-sm font-medium sm:text-base">
       [{stockCode}] {stockName}{" "}
       <span className={getBuyStateColor(buyState)}>
-        {getBuyStateText(buyState, buyPrice)}
+        {getBuyStateText(buyState, buyPrice, sellPrice)}
       </span>
     </div>
   );
