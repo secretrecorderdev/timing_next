@@ -6,7 +6,7 @@ export interface ApiRequestOptions<TBody = unknown>
   body?: TBody;
 }
 
-const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8082";
+const BACKEND_BASE_URL = "/api";
 
 export const apiClient = axios.create({
   baseURL: BACKEND_BASE_URL,
