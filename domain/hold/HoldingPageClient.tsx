@@ -21,7 +21,7 @@ export default function HoldingPageClient() {
   return (
     <div className="pb-10 sm:pb-12">
       <div className="mb-3 ml-1 text-sm font-semibold text-gray-700 sm:ml-2">
-        총 {items.length.toLocaleString()}개 · 수익률 합 {totalProfit > 0 ? "+" : ""}{totalProfit.toFixed(2)}% · 총 보유일 {totalHoldingDays.toLocaleString()}일
+        총 {items.length.toLocaleString()}개 · 수익률 합 {totalProfit > 0 ? "+" : ""}{totalProfit.toFixed(2)}% · 총 보유기간 {totalHoldingDays.toLocaleString()}일
       </div>
       <TradeList items={items} onItemClick={setSelectedTradeItem} />
       <TradeDetailModal

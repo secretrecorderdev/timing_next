@@ -17,6 +17,7 @@ export function normalizeTimingTradeItemsInput(input: TimingListInput): Required
     codes: input.codes ?? [],
     limit: input.limit ?? 500,
     offset: input.offset ?? 0,
+    polling: input.polling ?? false,
   };
 }
 

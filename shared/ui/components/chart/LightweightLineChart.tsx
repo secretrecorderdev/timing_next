@@ -56,16 +56,35 @@ export function LightweightLineChart({ data, markers = [] }: LightweightLineChar
   }, [data]);
 
   const chartMarkers = useMemo<SeriesMarker<Time>[]>(() => {
-    return markers.map((marker) => ({
-      id: marker.id,
-      time: marker.time,
-      position: marker.position,
-      shape: marker.shape,
-      color: marker.color,
-      text: marker.text,
-      price: marker.price,
-      size: 1.2,
-    }));
+    return markers.reduce<SeriesMarker<Time>[]>((acc, marker) => {
+      const baseMarker = {
+        id: marker.id,
+        time: marker.time,
+        shape: marker.shape,
+        color: marker.color,
+        text: marker.text,
+        size: 1.2,
+      };
+
+      if (marker.position === "atPriceTop" || marker.position === "atPriceBottom") {
+        if (marker.price != null) {
+          acc.push({
+            ...baseMarker,
+            position: marker.position,
+            price: marker.price,
+          });
+        }
+
+        return acc;
+      }
+
+      acc.push({
+        ...baseMarker,
+        position: marker.position,
+      });
+
+      return acc;
+    }, []);
   }, [markers]);
 
   useEffect(() => {
@@ -95,7 +114,7 @@ export function LightweightLineChart({ data, markers = [] }: LightweightLineChar
       },
       timeScale: {
         borderColor: "#e5e7eb",
-        tickMarkFormatter: (time) => formatChartLabel(time),
+        tickMarkFormatter: (time: Time) => formatChartLabel(time),
       },
       crosshair: {
         vertLine: { color: "#cbd5e1" },
