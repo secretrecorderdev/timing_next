@@ -42,7 +42,7 @@ jobs:
           host: ${{ secrets.TIMING_NEXT_SERVER_HOST }}
           username: ${{ secrets.TIMING_NEXT_SERVER_USER }}
           key: ${{ secrets.TIMING_NEXT_SERVER_SSH_KEY }}
-          port: ${{ secrets.TIMING_NEXT_SERVER_PORT }}
+          port: 22
           source: "timing-next.tar.gz"
           target: "/mnt/disk/works/timing-next-deploy"
 
@@ -52,7 +52,7 @@ jobs:
           host: ${{ secrets.TIMING_NEXT_SERVER_HOST }}
           username: ${{ secrets.TIMING_NEXT_SERVER_USER }}
           key: ${{ secrets.TIMING_NEXT_SERVER_SSH_KEY }}
-          port: ${{ secrets.TIMING_NEXT_SERVER_PORT }}
+          port: 22
           script: |
             mkdir -p /mnt/disk/works/timing-next-app
             tar -xzf /mnt/disk/works/timing-next-deploy/timing-next.tar.gz -C /mnt/disk/works/timing-next-app
