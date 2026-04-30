@@ -17,6 +17,7 @@ interface DateRangeFilterProps {
   startDate: string;
   endDate: string;
   minDate?: string;
+  maxDate: string;
   onChangeRange: (startDate: string, endDate: string) => void;
 }
 
@@ -24,6 +25,7 @@ export function DateRangeFilter({
   startDate,
   endDate,
   minDate = MIN_TIMING_DATE,
+  maxDate,
   onChangeRange,
 }: DateRangeFilterProps) {
   const detectedPreset = useMemo(
@@ -35,7 +37,6 @@ export function DateRangeFilter({
 
   const startInputValue = useMemo(() => formatDateInputValue(startDate), [startDate]);
   const endInputValue = useMemo(() => formatDateInputValue(endDate), [endDate]);
-  const maxDate = dayjs().format("YYYY-MM-DD");
 
   const handlePresetClick = (preset: RangePreset) => {
     if (preset === "custom") {
@@ -44,7 +45,7 @@ export function DateRangeFilter({
     }
 
     setIsCustomSelected(false);
-    const range = toRangeByPreset(preset);
+    const range = toRangeByPreset(preset, maxDate);
     onChangeRange(range.startDate, range.endDate);
   };
 

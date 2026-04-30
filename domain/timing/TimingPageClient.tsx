@@ -8,12 +8,12 @@ import { DateRangeFilter } from "@/shared/ui/components/date-range/DateRangeFilt
 import { PeriodSummaryCard } from "@/shared/ui/components/summary/PeriodSummaryCard";
 import CommonModal from "@/shared/ui/components/common/CommonModal";
 import CommonDetailGrid from "@/shared/ui/components/common/CommonDetailGrid";
-import { formatDateInputValue, getRangeSummaryLabel, MIN_TIMING_DATE } from "@/shared/lib/dateRange";
+import { formatDateInputValue, getRangeSummaryLabel, MIN_TIMING_DATE, toRangeByPreset } from "@/shared/lib/dateRange";
 import { useTimingTradeItems } from "@/domain/timing/hooks/useTimingTradeItems";
-import { useTimingDateRangeStore } from "@/domain/timing/store/useTimingDateRangeStore";
 
-export default function TimingPageClient() {
-  const { startDate, endDate, setRange } = useTimingDateRangeStore();
+export default function TimingPageClient({ today }: { today: string }) {
+  const [range, setRange] = useState(() => toRangeByPreset("3m", today));
+  const { startDate, endDate } = range;
   const { items, rawItems, summary } = useTimingTradeItems({ startDate, endDate, limit: 500, offset: 0 });
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
   const [selectedTradeItem, setSelectedTradeItem] = useState<TradeItem | null>(null);
@@ -33,12 +33,15 @@ export default function TimingPageClient() {
 
     return totalProfit / (totalHoldingDays / 365);
   }, [totalHoldingDays, totalProfit]);
-  const periodLabel = useMemo(() => `${getRangeSummaryLabel(startDate, endDate)} :`, [endDate, startDate]);
+  const periodLabel = useMemo(
+    () => `${getRangeSummaryLabel(startDate, endDate, today)} :`,
+    [endDate, startDate, today]
+  );
   const summaryDetailItems = useMemo(
     () => [
       {
         label: "기간",
-        value: getRangeSummaryLabel(startDate, endDate),
+        value: getRangeSummaryLabel(startDate, endDate, today),
       },
       {
         label: "시작일",
@@ -71,7 +74,7 @@ export default function TimingPageClient() {
             : `${Number(summary.kospiBenefit) > 0 ? "+" : ""}${Number(summary.kospiBenefit).toFixed(2)}% (${summary.startDateKospiValue ?? "-"} → ${summary.endDateKospiValue ?? "-"})`,
       },
     ],
-    [annualizedProfit, endDate, startDate, summary, totalHoldingDays, totalProfit],
+    [annualizedProfit, endDate, startDate, summary, today, totalHoldingDays, totalProfit],
   );
 
   return (
@@ -80,7 +83,10 @@ export default function TimingPageClient() {
         startDate={startDate}
         endDate={endDate}
         minDate={MIN_TIMING_DATE}
-        onChangeRange={setRange}
+        maxDate={today}
+        onChangeRange={(nextStartDate, nextEndDate) =>
+          setRange({ startDate: nextStartDate, endDate: nextEndDate })
+        }
       />
       <PeriodSummaryCard
         periodLabel={periodLabel}

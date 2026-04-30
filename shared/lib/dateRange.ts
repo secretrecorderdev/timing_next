@@ -12,6 +12,19 @@ export const rangePresetLabels: Record<RangePreset, string> = {
   custom: "직접 선택",
 };
 
+export function getTodayDateInTimeZone(timeZone = "Asia/Seoul") {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+}
+
+function getBaseEndOfDay(baseDate?: string) {
+  return (baseDate ? dayjs(baseDate) : dayjs()).endOf("day");
+}
+
 export function formatDateTimeTo12Digits(date: dayjs.Dayjs) {
   return date.format("YYYYMMDDHHmm");
 }
@@ -23,8 +36,8 @@ export function formatDateInputValue(value: string) {
   return `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}-${rawDate.slice(6, 8)}`;
 }
 
-export function toRangeByPreset(preset: Exclude<RangePreset, "custom">) {
-  const end = dayjs().endOf("day");
+export function toRangeByPreset(preset: Exclude<RangePreset, "custom">, baseDate?: string) {
+  const end = getBaseEndOfDay(baseDate);
 
   switch (preset) {
     case "7d":
@@ -50,11 +63,11 @@ export function toRangeByPreset(preset: Exclude<RangePreset, "custom">) {
   }
 }
 
-export function detectRangePreset(startDate: string, endDate: string): RangePreset {
+export function detectRangePreset(startDate: string, endDate: string, baseDate?: string): RangePreset {
   const presets: Exclude<RangePreset, "custom">[] = ["7d", "1m", "3m", "1y"];
 
   for (const preset of presets) {
-    const range = toRangeByPreset(preset);
+    const range = toRangeByPreset(preset, baseDate);
 
     if (range.startDate === startDate && range.endDate === endDate) {
       return preset;
@@ -64,8 +77,8 @@ export function detectRangePreset(startDate: string, endDate: string): RangePres
   return "custom";
 }
 
-export function getRangeSummaryLabel(startDate: string, endDate: string) {
-  const preset = detectRangePreset(startDate, endDate);
+export function getRangeSummaryLabel(startDate: string, endDate: string, baseDate?: string) {
+  const preset = detectRangePreset(startDate, endDate, baseDate);
 
   if (preset === "custom") {
     return "해당 기간";

@@ -75,7 +75,7 @@ export function Header() {
         >
           소리 {soundEnabled ? "ON" : "OFF"}
         </button>
-        <div className="flex items-center gap-2 whitespace-nowrap text-sm text-gray-700">
+        {/* <div className="flex items-center gap-2 whitespace-nowrap text-sm text-gray-700">
           <Link href="" onClick={handlePrepareClick} className="hover:underline">
             로그인
           </Link>
@@ -83,7 +83,7 @@ export function Header() {
           <Link href="" onClick={handlePrepareClick} className="hover:underline">
             회원가입
           </Link>
-        </div>
+        </div> */}
       </div>
     </header>
   );

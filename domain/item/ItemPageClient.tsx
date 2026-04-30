@@ -65,9 +65,9 @@ function toMarkerDate(value?: string | null) {
   return `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}`;
 }
 
-function SelectedStockTradeList({ stock }: { stock: KospiStockItem }) {
+function SelectedStockTradeList({ stock, today }: { stock: KospiStockItem; today: string }) {
   const codes = useMemo(() => [stock.code], [stock.code]);
-  const defaultRange = useMemo(() => toRangeByPreset("1y"), []);
+  const defaultRange = useMemo(() => toRangeByPreset("1y", today), [today]);
   const [chartRange, setChartRange] = useState(defaultRange);
   const { items, rawItems, summary } = useItemTimingTradeItems({
     codes,
@@ -138,11 +138,11 @@ function SelectedStockTradeList({ stock }: { stock: KospiStockItem }) {
       : totalHoldingDays > 0
         ? totalProfit / (totalHoldingDays / 365)
         : undefined;
-  const periodLabel = `${getRangeSummaryLabel(chartRange.startDate, chartRange.endDate)} :`;
+  const periodLabel = `${getRangeSummaryLabel(chartRange.startDate, chartRange.endDate, today)} :`;
   const summaryDetailItems = [
     {
       label: "기간",
-      value: getRangeSummaryLabel(chartRange.startDate, chartRange.endDate),
+      value: getRangeSummaryLabel(chartRange.startDate, chartRange.endDate, today),
     },
     {
       label: "시작일",
@@ -179,6 +179,7 @@ function SelectedStockTradeList({ stock }: { stock: KospiStockItem }) {
         startDate={chartRange.startDate}
         endDate={chartRange.endDate}
         minDate={MIN_TIMING_DATE}
+        maxDate={today}
         onChangeRange={(startDate, endDate) => setChartRange({ startDate, endDate })}
       />
       <StockDailyCloseChartCard
@@ -221,7 +222,7 @@ function SelectedStockTradeList({ stock }: { stock: KospiStockItem }) {
   );
 }
 
-export default function ItemPageClient() {
+export default function ItemPageClient({ today }: { today: string }) {
   const router = useRouter();
   const pathname = usePathname() ?? "/ko/item";
   const searchParams = useSearchParams();
@@ -344,7 +345,7 @@ export default function ItemPageClient() {
             다른 종목 검색
           </button>
         </div>
-        <SelectedStockTradeList stock={selectedStock} />
+        <SelectedStockTradeList stock={selectedStock} today={today} />
       </div>
     );
   }
