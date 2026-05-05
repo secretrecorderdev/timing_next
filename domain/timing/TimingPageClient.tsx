@@ -81,6 +81,14 @@ export default function TimingPageClient({ today }: { today: string }) {
   );
   const riskTradeSummaryItems = useMemo(() => {
     const summaryMap = new Map<string, { count: number; totalProfit: number; totalHoldingDays: number }>();
+    const riskLabelOrder = new Map<string, number>([
+      ["양호", 0],
+      ["주의", 1],
+      ["위험", 2],
+      ["위기", 3],
+      ["관망", 4],
+      ["미분류", 5],
+    ]);
 
     items
       .filter((item) => item.buyState === 1 || item.buyState === 2)
@@ -95,14 +103,16 @@ export default function TimingPageClient({ today }: { today: string }) {
         });
       });
 
-    return Array.from(summaryMap.entries()).map(([label, value]) => ({
-      label,
-      ...value,
-      annualizedProfit:
-        value.totalHoldingDays > 0
-          ? value.totalProfit / (value.totalHoldingDays / 365)
-          : null,
-    }));
+    return Array.from(summaryMap.entries())
+      .map(([label, value]) => ({
+        label,
+        ...value,
+        annualizedProfit:
+          value.totalHoldingDays > 0
+            ? value.totalProfit / (value.totalHoldingDays / 365)
+            : null,
+      }))
+      .sort((a, b) => (riskLabelOrder.get(a.label) ?? 999) - (riskLabelOrder.get(b.label) ?? 999));
   }, [items]);
   const summaryDetailItems = useMemo(
     () => [
@@ -202,8 +212,11 @@ export default function TimingPageClient({ today }: { today: string }) {
                   )}`}
                 >
                   <div className="text-sm font-semibold text-gray-900">{item.label}</div>
-                  <div className="mt-1 text-xs text-gray-600">
-                    {item.count.toLocaleString()}건 · 수익률 합 {item.totalProfit > 0 ? "+" : ""}{item.totalProfit.toFixed(2)}% · period {item.totalHoldingDays.toLocaleString()}일 · 환산 연수익률 {item.annualizedProfit == null ? "-" : `${item.annualizedProfit > 0 ? "+" : ""}${item.annualizedProfit.toFixed(2)}%`}
+                  <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-xs text-gray-600">
+                    <span>{item.count.toLocaleString()}건</span>
+                    <span>· 수익률 합 {item.totalProfit > 0 ? "+" : ""}{item.totalProfit.toFixed(2)}%</span>
+                    <span>· 보유 기간 {item.totalHoldingDays.toLocaleString()}일</span>
+                    <span>· 환산 연수익률 {item.annualizedProfit == null ? "-" : `${item.annualizedProfit > 0 ? "+" : ""}${item.annualizedProfit.toFixed(2)}%`}</span>
                   </div>
                 </div>
               ))
