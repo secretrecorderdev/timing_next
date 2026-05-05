@@ -72,13 +72,29 @@ export default function StockDetailPageClient({ stock, today }: { stock: KospiSt
     return markers;
   }, [chartPriceByDate, rawItems]);
 
-  const totalProfit = summary?.sumBenefit != null ? Number(summary.sumBenefit) : items.reduce((sum, item) => sum + item.profit, 0);
-  const totalHoldingDays = summary?.sumPeriod != null ? Number(summary.sumPeriod) : rawItems.reduce((sum, item) => sum + (item.period ?? 0), 0);
-  const annualizedProfit = summary?.annualizedBenefit != null
-    ? Number(summary.annualizedBenefit)
-    : totalHoldingDays > 0
-      ? totalProfit / (totalHoldingDays / 365)
-      : undefined;
+  const summaryTargetItems = useMemo(
+    () => items.filter((item) => item.buyState === 1 || item.buyState === 3),
+    [items],
+  );
+  const buySignalCount = useMemo(
+    () => items.filter((item) => item.buyState === 1 || item.buyState === 2).length,
+    [items],
+  );
+  const sellSignalCount = useMemo(
+    () => items.filter((item) => item.buyState === 3).length,
+    [items],
+  );
+  const totalProfit = useMemo(
+    () => summaryTargetItems.reduce((sum, item) => sum + item.profit, 0),
+    [summaryTargetItems],
+  );
+  const totalHoldingDays = useMemo(
+    () => summaryTargetItems.reduce((sum, item) => sum + item.holdingDays, 0),
+    [summaryTargetItems],
+  );
+  const annualizedProfit = totalHoldingDays > 0
+    ? totalProfit / (totalHoldingDays / 365)
+    : undefined;
   const rangeSummaryLabel = getRangeSummaryLabel(chartRange.startDate, chartRange.endDate, today);
   const periodLabel = `${rangeSummaryLabel} :`;
   const summaryDetailItems = [
@@ -87,6 +103,7 @@ export default function StockDetailPageClient({ stock, today }: { stock: KospiSt
     { label: "종료일", value: formatDateInputValue(chartRange.endDate) },
     { label: "수익률 합", value: `${totalProfit > 0 ? "+" : ""}${totalProfit.toFixed(2)}%` },
     { label: "환산 연수익률", value: annualizedProfit == null ? "-" : `${annualizedProfit > 0 ? "+" : ""}${annualizedProfit.toFixed(2)}%` },
+    { label: "매수/매도 신호", value: `매수 신호 ${buySignalCount.toLocaleString()}건, 매도 신호 ${sellSignalCount.toLocaleString()}건` },
     { label: "총 보유기간", value: `${totalHoldingDays.toLocaleString()}일` },
     {
       label: "코스피 변동률",

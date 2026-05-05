@@ -48,7 +48,7 @@ export default function ItemsPageClient() {
   const [isMobile, setIsMobile] = useState(false);
   const [resolvedHeight, setResolvedHeight] = useState<number>(520);
 
-  const responsiveEstimateSize = isMobile ? 104 : 92;
+  const responsiveEstimateSize = isMobile ? 152 : 124;
   const responsiveGap = isMobile ? 8 : 4;
 
   const rowVirtualizer = useVirtualizer({

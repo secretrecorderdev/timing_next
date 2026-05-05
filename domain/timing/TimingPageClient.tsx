@@ -24,13 +24,25 @@ export default function TimingPageClient({ today }: { today: string }) {
   const oneYearRiskQuery = useOneYearRisk(startDate, endDate, isRiskHistoryModalOpen);
   const [selectedTradeItem, setSelectedTradeItem] = useState<TradeItem | null>(null);
 
+  const summaryTargetItems = useMemo(
+    () => items.filter((item) => item.buyState === 1 || item.buyState === 3),
+    [items],
+  );
+  const buySignalCount = useMemo(
+    () => items.filter((item) => item.buyState === 1 || item.buyState === 2).length,
+    [items],
+  );
+  const sellSignalCount = useMemo(
+    () => items.filter((item) => item.buyState === 3).length,
+    [items],
+  );
   const totalProfit = useMemo(
-    () => items.reduce((sum, item) => sum + item.profit, 0),
-    [items]
+    () => summaryTargetItems.reduce((sum, item) => sum + item.profit, 0),
+    [summaryTargetItems],
   );
   const totalHoldingDays = useMemo(
-    () => rawItems.reduce((sum, item) => sum + (item.period ?? 0), 0),
-    [rawItems]
+    () => summaryTargetItems.reduce((sum, item) => sum + item.holdingDays, 0),
+    [summaryTargetItems],
   );
   const annualizedProfit = useMemo(() => {
     if (totalHoldingDays <= 0) {
@@ -118,6 +130,10 @@ export default function TimingPageClient({ today }: { today: string }) {
             : `${annualizedProfit > 0 ? "+" : ""}${annualizedProfit.toFixed(2)}% (${totalProfit > 0 ? "+" : ""}${totalProfit.toFixed(2)} ÷ ${totalHoldingDays.toLocaleString()} × 365)`,
       },
       {
+        label: "매수/매도 신호",
+        value: `매수 신호 ${buySignalCount.toLocaleString()}건, 매도 신호 ${sellSignalCount.toLocaleString()}건`,
+      },
+      {
         label: "총 보유기간",
         value: `${totalHoldingDays.toLocaleString()}일`,
       },
@@ -129,7 +145,7 @@ export default function TimingPageClient({ today }: { today: string }) {
             : `${Number(summary.kospiBenefit) > 0 ? "+" : ""}${Number(summary.kospiBenefit).toFixed(2)}% (${summary.startDateKospiValue ?? "-"} → ${summary.endDateKospiValue ?? "-"})`,
       },
     ],
-    [annualizedProfit, rangeSummaryLabel, summary, totalHoldingDays, totalProfit],
+    [annualizedProfit, buySignalCount, rangeSummaryLabel, sellSignalCount, summary, totalHoldingDays, totalProfit],
   );
 
   return (
@@ -170,7 +186,7 @@ export default function TimingPageClient({ today }: { today: string }) {
       >
         <div className="space-y-4">
           <div className="space-y-2">
-            <div className="px-1 text-sm font-semibold text-gray-800">각 위험도 별 매수 통계 (매도는 제외 됨)</div>
+            <div className="px-1 text-sm font-semibold text-gray-800">각 위험도 별 매수 통계</div>
             {riskTradeSummaryItems.length === 0 ? (
               <div className="rounded-xl border border-dashed border-gray-200 px-4 py-4 text-sm text-gray-500">
                 표시할 위험도별 매수가 없습니다.

@@ -123,9 +123,9 @@ export function LightweightLineChart({ data, markers = [] }: LightweightLineChar
     });
 
     const series = chart.addSeries(AreaSeries, {
-      lineColor: "#2563eb",
-      topColor: "rgba(37, 99, 235, 0.22)",
-      bottomColor: "rgba(37, 99, 235, 0.02)",
+      lineColor: "#10b981",
+      topColor: "rgba(16, 185, 129, 0.18)",
+      bottomColor: "rgba(16, 185, 129, 0.03)",
       lineWidth: 2,
       priceLineVisible: true,
       crosshairMarkerRadius: 4,
