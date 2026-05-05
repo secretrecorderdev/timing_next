@@ -158,7 +158,6 @@ export default function ItemsPageClient() {
               <div
                 key={key}
                 data-index={index}
-                ref={rowVirtualizer.measureElement}
                 className="absolute left-0 top-0 w-full"
                 style={{ transform: `translateY(${start}px)` }}
               >
