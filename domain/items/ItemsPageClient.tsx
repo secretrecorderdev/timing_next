@@ -19,7 +19,7 @@ function StockListCard({
 }) {
   return (
     <Card
-      className={`cursor-pointer rounded-3xl border px-5 py-4 shadow-sm transition duration-200 ${
+      className={`h-full cursor-pointer rounded-3xl border px-5 py-4 shadow-sm transition duration-200 ${
         selected
           ? "border-primary bg-primary/5"
           : "border-gray-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-primary/5 hover:shadow-md"
@@ -49,7 +49,8 @@ export default function ItemsPageClient() {
   const [resolvedHeight, setResolvedHeight] = useState<number>(520);
 
   const responsiveEstimateSize = isMobile ? 104 : 92;
-  const responsiveGap = isMobile ? 4 : 2;
+  const responsiveGap = isMobile ? 8 : 4;
+  const responsiveMinRowHeight = isMobile ? 104 : 92;
 
   const rowVirtualizer = useVirtualizer({
     count: items.length,
@@ -85,8 +86,6 @@ export default function ItemsPageClient() {
   }, [isMobile, items.length, rowVirtualizer]);
 
   useEffect(() => {
-    let frameId: number | null = null;
-
     const updateHeight = () => {
       const element = parentRef.current;
 
@@ -107,28 +106,10 @@ export default function ItemsPageClient() {
       });
     };
 
-    const handleOuterScroll = () => {
-      if (frameId != null) {
-        cancelAnimationFrame(frameId);
-      }
-
-      frameId = requestAnimationFrame(() => {
-        updateHeight();
-        frameId = null;
-      });
-    };
-
     updateHeight();
     window.addEventListener("resize", updateHeight);
-    window.addEventListener("scroll", handleOuterScroll, { passive: true });
 
-    return () => {
-      window.removeEventListener("resize", updateHeight);
-      window.removeEventListener("scroll", handleOuterScroll);
-      if (frameId != null) {
-        cancelAnimationFrame(frameId);
-      }
-    };
+    return () => window.removeEventListener("resize", updateHeight);
   }, [isMobile, rowVirtualizer]);
 
   const handleSelectStock = (item: KospiStockItem) => {
@@ -180,7 +161,10 @@ export default function ItemsPageClient() {
                 data-index={index}
                 ref={rowVirtualizer.measureElement}
                 className="absolute left-0 top-0 w-full"
-                style={{ transform: `translateY(${start}px)` }}
+                style={{
+                  minHeight: responsiveMinRowHeight,
+                  transform: `translateY(${start}px)`,
+                }}
               >
                 <StockListCard item={item} selected={false} onSelect={handleSelectStock} />
               </div>
