@@ -85,6 +85,8 @@ export default function ItemsPageClient() {
   }, [isMobile, items.length, rowVirtualizer]);
 
   useEffect(() => {
+    let frameId: number | null = null;
+
     const updateHeight = () => {
       const element = parentRef.current;
 
@@ -105,10 +107,28 @@ export default function ItemsPageClient() {
       });
     };
 
+    const handleOuterScroll = () => {
+      if (frameId != null) {
+        cancelAnimationFrame(frameId);
+      }
+
+      frameId = requestAnimationFrame(() => {
+        updateHeight();
+        frameId = null;
+      });
+    };
+
     updateHeight();
     window.addEventListener("resize", updateHeight);
+    window.addEventListener("scroll", handleOuterScroll, { passive: true });
 
-    return () => window.removeEventListener("resize", updateHeight);
+    return () => {
+      window.removeEventListener("resize", updateHeight);
+      window.removeEventListener("scroll", handleOuterScroll);
+      if (frameId != null) {
+        cancelAnimationFrame(frameId);
+      }
+    };
   }, [isMobile, rowVirtualizer]);
 
   const handleSelectStock = (item: KospiStockItem) => {
