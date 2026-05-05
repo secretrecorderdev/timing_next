@@ -29,6 +29,8 @@ export function mapToTradeItem(item: TimingListItem): TradeItem {
     timingDateTime: timingDate ? formatDateTime(timingDate) : null,
     priceDateTime: priceDate ? formatDateTime(priceDate) : null,
     sellDateTime: sellDate ? formatDateTime(sellDate) : null,
+    buyRiskLevel: item.buyRiskLevel ?? null,
+    buyRiskLevelKr: item.buyRiskLevelKr ?? null,
     profit: Number.parseFloat(String(item.benefit ?? 0)) || 0,
   };
 }

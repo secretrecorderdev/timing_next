@@ -11,5 +11,7 @@ export interface TradeItem {
   timingDateTime?: string | null;
   priceDateTime?: string | null;
   sellDateTime?: string | null;
+  buyRiskLevel?: number | null;
+  buyRiskLevelKr?: string | null;
   profit: number;
 }

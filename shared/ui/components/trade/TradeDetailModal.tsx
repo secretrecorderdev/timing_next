@@ -72,6 +72,7 @@ export function TradeDetailModal({ open, item, onClose }: TradeDetailModalProps)
       : []),
     { label: "보유 기간", value: `${item.holdingDays.toLocaleString()}일` },
     { label: "수익률", value: formatSignedPercent(item.profit) },
+    { label: "매수 시 위험도", value: item.buyRiskLevelKr ?? "-" },
   ];
 
   return (

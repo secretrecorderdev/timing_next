@@ -39,6 +39,8 @@ export interface TimingListItem {
   period?: number | null;
   buyType?: string | null;
   sellType?: string | null;
+  buyRiskLevel?: number | null;
+  buyRiskLevelKr?: string | null;
 }
 
 export interface TimingSignalItem extends TimingListItem {
