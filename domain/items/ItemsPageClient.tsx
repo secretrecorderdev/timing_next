@@ -48,9 +48,9 @@ export default function ItemsPageClient() {
   const [isMobile, setIsMobile] = useState(false);
   const [resolvedHeight, setResolvedHeight] = useState<number>(520);
 
-  const responsiveEstimateSize = isMobile ? 104 : 92;
+  const responsiveEstimateSize = isMobile ? 120 : 108;
   const responsiveGap = isMobile ? 8 : 4;
-  const responsiveMinRowHeight = isMobile ? 104 : 92;
+  const responsiveMinRowHeight = isMobile ? 120 : 108;
 
   const rowVirtualizer = useVirtualizer({
     count: items.length,
