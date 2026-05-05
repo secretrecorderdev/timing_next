@@ -48,8 +48,8 @@ export default function ItemsPageClient() {
   const [isMobile, setIsMobile] = useState(false);
   const [resolvedHeight, setResolvedHeight] = useState<number>(520);
 
-  const responsiveEstimateSize = isMobile ? 96 : 84;
-  const responsiveGap = isMobile ? 8 : 4;
+  const responsiveEstimateSize = isMobile ? 104 : 92;
+  const responsiveGap = isMobile ? 4 : 2;
 
   const rowVirtualizer = useVirtualizer({
     count: items.length,
@@ -158,6 +158,7 @@ export default function ItemsPageClient() {
               <div
                 key={key}
                 data-index={index}
+                ref={rowVirtualizer.measureElement}
                 className="absolute left-0 top-0 w-full"
                 style={{ transform: `translateY(${start}px)` }}
               >
