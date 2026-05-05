@@ -1,8 +1,9 @@
 "use client";
 
 import { create } from "zustand";
+import type { SignalInboxTone } from "@/shared/types/signalInbox";
 
-export type NotificationTone = "default" | "success" | "warning" | "danger" | "info";
+export type NotificationTone = SignalInboxTone;
 
 export interface NotificationItem {
   id: string;

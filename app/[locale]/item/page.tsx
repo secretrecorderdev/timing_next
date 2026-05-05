@@ -1,8 +1,5 @@
-import ItemPageClient from "@/domain/item/ItemPageClient";
-import { getTodayDateInTimeZone } from "@/shared/lib/dateRange";
+import ItemsPageClient from "@/domain/items/ItemsPageClient";
 
 export default function Item() {
-  const today = getTodayDateInTimeZone();
-
-  return <ItemPageClient today={today} />;
+  return <ItemsPageClient />;
 }

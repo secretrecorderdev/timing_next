@@ -170,7 +170,7 @@ export default function TimingPageClient({ today }: { today: string }) {
       >
         <div className="space-y-4">
           <div className="space-y-2">
-            <div className="px-1 text-sm font-semibold text-gray-800">각 위험도 별 매수 통계</div>
+            <div className="px-1 text-sm font-semibold text-gray-800">각 위험도 별 매수 통계 (매도는 제외 됨)</div>
             {riskTradeSummaryItems.length === 0 ? (
               <div className="rounded-xl border border-dashed border-gray-200 px-4 py-4 text-sm text-gray-500">
                 표시할 위험도별 매수가 없습니다.
@@ -179,7 +179,11 @@ export default function TimingPageClient({ today }: { today: string }) {
               riskTradeSummaryItems.map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-xl border border-gray-100 bg-white px-4 py-3"
+                  className={`rounded-xl border px-4 py-3 ${getRiskLevelBadgeClass(
+                    Object.entries(RiskLevelKrMap).find(([, label]) => label === item.label)?.[0]
+                      ? Number(Object.entries(RiskLevelKrMap).find(([, label]) => label === item.label)?.[0])
+                      : null,
+                  )}`}
                 >
                   <div className="text-sm font-semibold text-gray-900">{item.label}</div>
                   <div className="mt-1 text-xs text-gray-600">

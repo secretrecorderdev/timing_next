@@ -1,5 +1,9 @@
-import ItemPage from './page';
+import type { ReactNode } from "react";
 
-export default function Item() {
-  return <ItemPage />;
+export default function ItemLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  return children;
 }

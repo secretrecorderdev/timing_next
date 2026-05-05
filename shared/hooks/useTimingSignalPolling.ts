@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTimingList } from "@/domain/timing/api/timingApi";
 import type { TimingListItem } from "@/domain/timing/types/timing";
+import { playNotificationSound } from "@/shared/lib/notificationSound";
 import { useNotificationStore } from "@/shared/store/useNotificationStore";
+import { useSignalInboxStore } from "@/shared/store/useSignalInboxStore";
 import { useTimingSignalStore } from "@/shared/store/useTimingSignalStore";
 
 const POLLING_INTERVAL_MS = 10_000;
@@ -149,17 +151,31 @@ export function useTimingSignalPolling() {
       return;
     }
 
-    const { showNotification } = useNotificationStore.getState();
     const newestFirstItems = [...appendedItems].sort((left, right) => (right.timingDate ?? "").localeCompare(left.timingDate ?? ""));
 
-    newestFirstItems.forEach((item) => {
-      showNotification({
+    useSignalInboxStore.getState().enqueueItems(
+      newestFirstItems.map((item) => ({
+        source: "더타이밍 신호",
         title: `[${item.code ?? "-"}] ${item.name ?? "이름없음"} ${getSignalLabel(item)}`,
-        description: `가격: ${formatSignalPrice(resolveSignalPrice(item))} · 시각: ${formatTimingDate(item.timingDate)}`,
+        body: `가격: ${formatSignalPrice(resolveSignalPrice(item))}\n시각: ${formatTimingDate(item.timingDate)}`,
         tone: getSignalTone(item),
         sound: true,
-      });
-    });
+        code: item.code ?? undefined,
+        name: item.name ?? undefined,
+        timingDate: item.timingDate ?? null,
+        metadata: {
+          buyState: item.buyState ?? null,
+          sellPrice: item.sellPrice ?? null,
+          buyPrice: item.buyPrice ?? null,
+          currentPrice: item.currentPrice ?? null,
+        },
+      })),
+    );
+
+    const { soundEnabled } = useNotificationStore.getState();
+    if (soundEnabled) {
+      void playNotificationSound();
+    }
   }, [appendSignals, query.dataUpdatedAt, query.data?.items]);
 
   return {

@@ -9,6 +9,7 @@ import NavBar from "@/shared/ui/layout/NavBar";
 import GlobalLoading from "@/shared/ui/feedback/GlobalLoading";
 import GlobalToast from "@/shared/ui/feedback/GlobalToast";
 import GlobalNotification from "@/shared/ui/feedback/GlobalNotification";
+import SignalInboxModal from "@/shared/ui/feedback/SignalInboxModal";
 import { TimingTradeItemsBootstrap } from "@/shared/bootstrap/TimingTradeItemsBootstrap";
 // import { TabItem } from "@/ui/components/HorizontalTab/HorizontalTab.types";
 export const metadata: Metadata = baseMetadata;
@@ -32,6 +33,7 @@ export default async function RootLayout({
           <GlobalLoading />
           <GlobalToast />
           <GlobalNotification />
+          <SignalInboxModal />
           <LanguageProvider>
             <TimingTradeItemsBootstrap />
             <Header />
