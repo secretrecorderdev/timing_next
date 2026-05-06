@@ -25,6 +25,18 @@ export interface TimingWindowRiskItem {
   prevRiskLevelKr?: string | null;
 }
 
+export function getRiskLevelLabel(risk?: Pick<TimingWindowRiskItem, "riskLevel" | "riskLevelKr"> | null) {
+  if (!risk) {
+    return null;
+  }
+
+  if (risk.riskLevel != null && RiskLevelKrMap[risk.riskLevel]) {
+    return RiskLevelKrMap[risk.riskLevel];
+  }
+
+  return risk.riskLevelKr ?? null;
+}
+
 export function getPrevRiskLevelLabel(risk?: Pick<TimingWindowRiskItem, "prevRiskLevel" | "prevRiskLevelKr"> | null) {
   if (!risk) {
     return null;

@@ -12,7 +12,7 @@ import { formatDateInputValue, getRangeSummaryLabel, MIN_TIMING_DATE, toRangeByP
 import { useTimingTradeItems } from "@/domain/timing/hooks/useTimingTradeItems";
 import { useLatestRisk } from "@/domain/risk/hooks/useLatestRisk";
 import { useOneYearRisk } from "@/domain/risk/hooks/useOneYearRisk";
-import { formatRiskDate, getPrevRiskLevelLabel, getRiskLevelBadgeClass, RiskLevelKrMap } from "@/domain/risk/types/risk";
+import { formatRiskDate, getRiskLevelBadgeClass, getRiskLevelLabel, RiskLevelKrMap } from "@/domain/risk/types/risk";
 
 export default function TimingPageClient({ today }: { today: string }) {
   const [range, setRange] = useState(() => toRangeByPreset("3m", today));
@@ -59,26 +59,39 @@ export default function TimingPageClient({ today }: { today: string }) {
     () => `${rangeSummaryLabel} :`,
     [rangeSummaryLabel]
   );
-  const prevRiskLabel = useMemo(
-    () => getPrevRiskLevelLabel(latestRiskQuery.data),
+  const currentRiskLabel = useMemo(
+    () => getRiskLevelLabel(latestRiskQuery.data),
     [latestRiskQuery.data],
   );
-  const prevRiskBadgeClass = useMemo(
-    () => getRiskLevelBadgeClass(latestRiskQuery.data?.prevRiskLevel),
-    [latestRiskQuery.data?.prevRiskLevel],
+  const currentRiskBadgeClass = useMemo(
+    () => getRiskLevelBadgeClass(latestRiskQuery.data?.riskLevel),
+    [latestRiskQuery.data?.riskLevel],
   );
-  const riskHistoryItems = useMemo(
-    () =>
-      (oneYearRiskQuery.data ?? []).map((risk) => ({
-        id: risk.id,
-        targetDateTime: formatRiskDate(risk.targetDateTime),
-        prevRiskLabel:
-          risk.prevRiskLevel != null
-            ? (RiskLevelKrMap[risk.prevRiskLevel] ?? risk.prevRiskLevelKr ?? "-")
-            : (risk.prevRiskLevelKr ?? "-"),
-      })),
-    [oneYearRiskQuery.data],
-  );
+  const riskHistoryItems = useMemo(() => {
+    const historyItems = (oneYearRiskQuery.data ?? []).map((risk) => ({
+      id: String(risk.id),
+      targetDateTime: formatRiskDate(risk.targetDateTime),
+      riskLabel:
+        risk.prevRiskLevel != null
+          ? (RiskLevelKrMap[risk.prevRiskLevel] ?? risk.prevRiskLevelKr ?? "-")
+          : (risk.prevRiskLevelKr ?? "-"),
+      riskLevel: risk.prevRiskLevel ?? null,
+    }));
+
+    if (!currentRiskLabel) {
+      return historyItems;
+    }
+
+    return [
+      {
+        id: "current",
+        targetDateTime: "현재",
+        riskLabel: currentRiskLabel,
+        riskLevel: latestRiskQuery.data?.riskLevel ?? null,
+      },
+      ...historyItems,
+    ];
+  }, [currentRiskLabel, latestRiskQuery.data?.riskLevel, oneYearRiskQuery.data]);
   const riskTradeSummaryItems = useMemo(() => {
     const summaryMap = new Map<string, { count: number; totalProfit: number; totalHoldingDays: number }>();
     const riskLabelOrder = new Map<string, number>([
@@ -191,7 +204,7 @@ export default function TimingPageClient({ today }: { today: string }) {
         hideCancelButton
         onConfirm={() => setIsRiskHistoryModalOpen(false)}
         onCancel={() => setIsRiskHistoryModalOpen(false)}
-        panelClassName="max-w-lg"
+        panelClassName="max-w-2xl min-w-[50vw]"
         contentClassName="max-h-[60dvh] overflow-y-auto px-4 py-4 sm:px-6"
       >
         <div className="space-y-4">
@@ -212,8 +225,8 @@ export default function TimingPageClient({ today }: { today: string }) {
                   )}`}
                 >
                   <div className="text-sm font-semibold text-gray-900">{item.label}</div>
-                  <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-xs text-gray-600">
-                    <span>{item.count.toLocaleString()}건</span>
+                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-600 sm:text-sm">
+                    <span>매수 {item.count.toLocaleString()}건</span>
                     <span>· 수익률 합 {item.totalProfit > 0 ? "+" : ""}{item.totalProfit.toFixed(2)}%</span>
                     <span>· 보유 기간 {item.totalHoldingDays.toLocaleString()}일</span>
                     <span>· 환산 연수익률 {item.annualizedProfit == null ? "-" : `${item.annualizedProfit > 0 ? "+" : ""}${item.annualizedProfit.toFixed(2)}%`}</span>
@@ -234,7 +247,11 @@ export default function TimingPageClient({ today }: { today: string }) {
                   className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-4 py-3"
                 >
                   <span className="text-sm font-medium text-gray-700">{risk.targetDateTime}</span>
-                  <span className="text-sm font-semibold text-gray-900">{risk.prevRiskLabel}</span>
+                  <span
+                    className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${getRiskLevelBadgeClass(risk.riskLevel)}`}
+                  >
+                    {risk.riskLabel}
+                  </span>
                 </div>
               ))
             )}
@@ -243,13 +260,13 @@ export default function TimingPageClient({ today }: { today: string }) {
       </CommonModal>
       <div className="mb-3 ml-1 flex flex-wrap items-center gap-2 text-sm font-semibold text-gray-700 sm:ml-2">
         <span>총 {items.length.toLocaleString()}개</span>
-        {prevRiskLabel ? (
+        {currentRiskLabel ? (
           <button
             type="button"
             onClick={() => setIsRiskHistoryModalOpen(true)}
-            className={`inline-flex cursor-pointer items-center rounded-full border px-3 py-1 text-xs font-semibold transition hover:opacity-85 ${prevRiskBadgeClass}`}
+            className={`inline-flex cursor-pointer items-center rounded-full border px-3 py-1 text-xs font-semibold transition hover:opacity-85 ${currentRiskBadgeClass}`}
           >
-            위험도 : {prevRiskLabel}
+            위험도 : {currentRiskLabel}
           </button>
         ) : null}
       </div>
