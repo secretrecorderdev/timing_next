@@ -11,7 +11,7 @@ import CommonDetailGrid from "@/shared/ui/components/common/CommonDetailGrid";
 import { formatDateInputValue, getRangeSummaryLabel, MIN_TIMING_DATE, toRangeByPreset } from "@/shared/lib/dateRange";
 import { useTimingTradeItems } from "@/domain/timing/hooks/useTimingTradeItems";
 import { useLatestRisk } from "@/domain/risk/hooks/useLatestRisk";
-import { useOneYearRisk } from "@/domain/risk/hooks/useOneYearRisk";
+import { usePeriodRisk } from "@/domain/risk/hooks/usePeriodRisk";
 import { formatRiskDate, getRiskLevelBadgeClass, getRiskLevelLabel, RiskLevelKrMap } from "@/domain/risk/types/risk";
 
 export default function TimingPageClient({ today }: { today: string }) {
@@ -21,7 +21,7 @@ export default function TimingPageClient({ today }: { today: string }) {
   const latestRiskQuery = useLatestRisk();
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
   const [isRiskHistoryModalOpen, setIsRiskHistoryModalOpen] = useState(false);
-  const oneYearRiskQuery = useOneYearRisk(startDate, endDate, isRiskHistoryModalOpen);
+  const periodRiskQuery = usePeriodRisk(startDate, endDate, isRiskHistoryModalOpen);
   const [selectedTradeItem, setSelectedTradeItem] = useState<TradeItem | null>(null);
 
   const summaryTargetItems = useMemo(
@@ -68,7 +68,8 @@ export default function TimingPageClient({ today }: { today: string }) {
     [latestRiskQuery.data?.riskLevel],
   );
   const riskHistoryItems = useMemo(() => {
-    const historyItems = (oneYearRiskQuery.data ?? []).map((risk) => ({
+    // 여기서 리스크를 전날로 계산함, 2026-05-23, jangkh
+    const historyItems = (periodRiskQuery.data ?? []).map((risk) => ({
       id: String(risk.id),
       targetDateTime: formatRiskDate(risk.targetDateTime),
       riskLabel:
@@ -91,7 +92,7 @@ export default function TimingPageClient({ today }: { today: string }) {
       },
       ...historyItems,
     ];
-  }, [currentRiskLabel, latestRiskQuery.data?.riskLevel, oneYearRiskQuery.data]);
+  }, [currentRiskLabel, latestRiskQuery.data?.riskLevel, periodRiskQuery.data]);
   const riskTradeSummaryItems = useMemo(() => {
     const summaryMap = new Map<string, { count: number; totalProfit: number; totalHoldingDays: number }>();
     const riskLabelOrder = new Map<string, number>([
@@ -236,12 +237,14 @@ export default function TimingPageClient({ today }: { today: string }) {
             )}
           </div>
           <div className="space-y-2 border-t border-gray-100 pt-4">
-            {oneYearRiskQuery.isLoading ? (
+            {periodRiskQuery.isLoading ? (
               <div className="py-6 text-center text-sm text-gray-500">불러오는 중...</div>
             ) : riskHistoryItems.length === 0 ? (
               <div className="py-6 text-center text-sm text-gray-500">표시할 위험도 이력이 없습니다.</div>
             ) : (
               riskHistoryItems.map((risk) => (
+                risk.riskLevel == 0 ? <></>
+                :
                 <div
                   key={risk.id}
                   className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-4 py-3"

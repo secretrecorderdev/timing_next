@@ -2,19 +2,51 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
+import axios from "axios";
+import { usePathname } from "next/navigation";
+import { getAuthMe } from "@/domain/auth/api/authApi";
+import CommonModal from "@/shared/ui/components/common/CommonModal";
 import { Text } from "../primitives/text/Text";
 import { playNotificationSound, unlockNotificationSound } from "@/shared/lib/notificationSound";
+import { useAuthStore } from "@/shared/store/useAuthStore";
 import { useNotificationStore } from "@/shared/store/useNotificationStore";
 import { useToastStore } from "@/shared/store/useToastStore";
 
 export function Header() {
+  const pathname = usePathname() ?? "/ko/timing";
+  const localePrefix = pathname.match(/^\/(ko|en)(?=\/|$)/)?.[0] ?? "/ko";
   const { showToast } = useToastStore();
   const soundEnabled = useNotificationStore((state) => state.soundEnabled);
   const setSoundEnabled = useNotificationStore((state) => state.setSoundEnabled);
+  const user = useAuthStore((state) => state.user);
+  const token = useAuthStore((state) => state.token);
+  const hydrated = useAuthStore((state) => state.hydrated);
+  const logout = useAuthStore((state) => state.logout);
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+  const [isTestingAuth, setIsTestingAuth] = useState(false);
 
-  const handlePrepareClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    showToast("준비중입니다");
+  const handleAuthTest = async () => {
+    if (!token?.accessToken || isTestingAuth) {
+      showToast("테스트할 access token이 없습니다.");
+      return;
+    }
+
+    try {
+      setIsTestingAuth(true);
+      const result = await getAuthMe(token.accessToken);
+      console.log("[jang][header] auth test success", result);
+      showToast(`인증 테스트 성공: userId ${result.userId}`);
+    } catch (error) {
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      const message = axios.isAxiosError(error)
+        ? error.response?.data?.message ?? `인증 테스트 실패(${status ?? "unknown"})`
+        : "인증 테스트 실패";
+      console.error("[jang][header] auth test failed", { status, error, message });
+      showToast(message);
+    } finally {
+      setIsTestingAuth(false);
+    }
   };
 
   const handleToggleSound = async () => {
@@ -68,23 +100,63 @@ export function Header() {
       </div>
 
       <div className="flex w-full flex-wrap items-center justify-between gap-2 text-sm font-semibold sm:w-auto sm:justify-end sm:gap-4">
-        <button
-          type="button"
-          onClick={() => void handleToggleSound()}
-          className={`rounded-full border px-3 py-2 text-xs font-semibold transition ${soundEnabled ? "border-blue-300 bg-blue-50 text-blue-700" : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"}`}
-        >
-          소리 {soundEnabled ? "ON" : "OFF"}
-        </button>
-        {/* <div className="flex items-center gap-2 whitespace-nowrap text-sm text-gray-700">
-          <Link href="" onClick={handlePrepareClick} className="hover:underline">
-            로그인
-          </Link>
-          <span className="text-gray-300">|</span>
-          <Link href="" onClick={handlePrepareClick} className="hover:underline">
-            회원가입
-          </Link>
-        </div> */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => void handleAuthTest()}
+            className="rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700 transition hover:border-amber-300"
+          >
+            {isTestingAuth ? "인증 테스트중" : "인증 테스트"}
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleToggleSound()}
+            className={`rounded-full border px-3 py-2 text-xs font-semibold transition ${soundEnabled ? "border-blue-300 bg-blue-50 text-blue-700" : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"}`}
+          >
+            소리 {soundEnabled ? "ON" : "OFF"}
+          </button>
+        </div>
+        <div className="flex items-center gap-2 whitespace-nowrap text-sm text-gray-700">
+          {!hydrated ? (
+            <span className="text-xs text-gray-400">로그인 확인중...</span>
+          ) : user ? (
+            <>
+              <span className="max-w-[160px] truncate text-sm text-gray-700">
+                {user.nickName || "사용"}님
+              </span>
+              <span className="text-gray-300">|</span>
+              <button
+                type="button"
+                onClick={() => setLogoutModalOpen(true)}
+                className="hover:underline"
+              >
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <Link href={`${localePrefix}/login`} className="hover:underline">
+              로그인
+            </Link>
+          )}
+        </div>
       </div>
+
+      <CommonModal
+        open={logoutModalOpen}
+        title="로그아웃"
+        confirmText="로그아웃"
+        cancelText="취소"
+        onCancel={() => setLogoutModalOpen(false)}
+        onConfirm={() => {
+          logout();
+          setLogoutModalOpen(false);
+          showToast("로그아웃 되었습니다.");
+        }}
+      >
+        <Text size="sm" color="muted">
+          로그아웃 하시겠습니까?
+        </Text>
+      </CommonModal>
     </header>
   );
 }
