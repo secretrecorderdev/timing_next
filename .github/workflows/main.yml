@@ -46,7 +46,7 @@ jobs:
           key: ${{ secrets.TIMING_NEXT_SERVER_SSH_KEY }}
           port: 22
           source: "timing-next.tar.gz"
-          target: "/mnt/disk/works/timing-next-deploy"
+          target: "/home/ubuntu/works/timing-next-deploy"
 
       - name: Restart Next server
         uses: appleboy/ssh-action@v1.0.3
@@ -56,10 +56,10 @@ jobs:
           key: ${{ secrets.TIMING_NEXT_SERVER_SSH_KEY }}
           port: 22
           script: |
-            mkdir -p /mnt/disk/works/timing-next-app
-            tar -xzf /mnt/disk/works/timing-next-deploy/timing-next.tar.gz -C /mnt/disk/works/timing-next-app
+            mkdir -p /home/ubuntu/works/timing-next-app
+            tar -xzf /home/ubuntu/works/timing-next-deploy/timing-next.tar.gz -C /home/ubuntu/works/timing-next-app
 
-            cd /mnt/disk/works/timing-next-app
+            cd /home/ubuntu/works/timing-next-app
 
             pm2 describe timing-next > /dev/null
             if [ $? -eq 0 ]; then
