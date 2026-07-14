@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import StockDetailPageClient from "@/domain/detail/StockDetailPageClient";
 import { fetchKospiStockList } from "@/domain/items/api/itemsApi";
 import type { KospiStockItem } from "@/domain/items/types/item";
+import { formatStockIndustryLabel } from "@/shared/lib/stockIndustry";
 import { Card } from "@/shared/ui/primitives/card/Card";
 
 export default function DetailPageClient({ code, today }: { code: string; today: string }) {
@@ -14,6 +15,10 @@ export default function DetailPageClient({ code, today }: { code: string; today:
   const [stock, setStock] = useState<KospiStockItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const industryLabel = useMemo(
+    () => formatStockIndustryLabel(stock?.sector, stock?.primaryIndustry),
+    [stock?.primaryIndustry, stock?.sector],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -68,7 +73,10 @@ export default function DetailPageClient({ code, today }: { code: string; today:
     <div className="pb-4">
       <div className="mb-4 flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3 pt-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <div className="text-lg font-semibold text-gray-900">{stock.baseName}</div>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-lg font-semibold text-gray-900">
+            <span>{stock.baseName}</span>
+            {industryLabel && <span className="text-sm font-medium text-gray-500">{industryLabel}</span>}
+          </div>
           <div className="mt-1 text-sm font-medium text-gray-500">[{stock.code}]</div>
         </div>
         <button

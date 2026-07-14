@@ -20,6 +20,8 @@ export function mapToTradeItem(item: TimingListItem): TradeItem {
   return {
     code: item.code ?? "-",
     name: item.name ?? "-",
+    sector: item.sector ?? null,
+    primaryIndustry: item.primaryIndustry ?? null,
     buyPrice: item.buyPrice ?? 0,
     currentPrice,
     sellPrice: item.sellPrice ?? null,

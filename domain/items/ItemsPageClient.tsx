@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useKospiStockItems } from "@/domain/items/hooks/useKospiStockItems";
 import type { KospiStockItem } from "@/domain/items/types/item";
+import { formatStockIndustryLabel } from "@/shared/lib/stockIndustry";
 import { TradeActionButtons } from "@/shared/ui/components/trade/TradeActionButtons";
 import { Card } from "@/shared/ui/primitives/card/Card";
 
@@ -17,6 +18,8 @@ function StockListCard({
   selected: boolean;
   onSelect: (item: KospiStockItem) => void;
 }) {
+  const industryLabel = formatStockIndustryLabel(item.sector, item.primaryIndustry);
+
   return (
     <Card
       className={`h-full cursor-pointer rounded-3xl border px-5 py-4 shadow-sm transition duration-200 ${
@@ -31,7 +34,10 @@ function StockListCard({
           onClick={() => onSelect(item)}
           className="min-w-0 flex-1 cursor-pointer text-left"
         >
-          <div className="text-lg font-semibold text-gray-900">{item.baseName}</div>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-lg font-semibold text-gray-900">
+            <span>{item.baseName}</span>
+            {industryLabel && <span className="text-sm font-medium text-gray-500">{industryLabel}</span>}
+          </div>
           <div className="mt-1 text-sm font-medium text-gray-500">[{item.code}]</div>
         </button>
         <TradeActionButtons code={item.code} className="grid shrink-0 grid-cols-2 justify-items-center gap-2 sm:flex sm:justify-end sm:gap-3" />

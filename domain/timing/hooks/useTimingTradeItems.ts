@@ -5,19 +5,19 @@ import { useLoadingStore } from "@/shared/store/useLoadingStore";
 
 export function useTimingTradeItems(input: TimingListInput) {
   const { setGlobalLoading } = useLoadingStore();
-  const query = useTimingTradeItemsQuery(input);
+  const timingTradeItemsResult = useTimingTradeItemsQuery(input);
 
   useEffect(() => {
-    setGlobalLoading(query.isLoading);
-  }, [query.isLoading, setGlobalLoading]);
+    setGlobalLoading(timingTradeItemsResult.isLoading);
+  }, [timingTradeItemsResult.isLoading, setGlobalLoading]);
 
   return {
-    items: query.data?.items ?? [],
-    rawItems: query.data?.rawItems ?? [],
-    summary: query.data?.summary ?? null,
-    isLoading: query.isLoading,
-    error: query.error?.message ?? null,
-    lastFetchedAt: query.dataUpdatedAt || null,
-    refetch: query.refetch,
+    items: timingTradeItemsResult.data?.items ?? [],
+    rawItems: timingTradeItemsResult.data?.rawItems ?? [],
+    summary: timingTradeItemsResult.data?.summary ?? null,
+    isLoading: timingTradeItemsResult.isLoading,
+    error: timingTradeItemsResult.error?.message ?? null,
+    lastFetchedAt: timingTradeItemsResult.dataUpdatedAt || null,
+    refetch: timingTradeItemsResult.refetch,
   };
 }

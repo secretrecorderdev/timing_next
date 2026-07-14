@@ -2,6 +2,8 @@
 export interface TradeItem {
   code: string;
   name: string;
+  sector?: string | null;
+  primaryIndustry?: string | null;
   buyState: number; // Optional, if not used in TradeCardHeader
   buyPrice: number;
   currentPrice: number;

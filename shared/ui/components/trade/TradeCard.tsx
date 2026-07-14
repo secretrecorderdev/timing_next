@@ -39,6 +39,8 @@ function TradeCardComponent({ item, onClick }: TradeCardProps) {
             <TradeCardTitle
               stockCode={item.code}
               stockName={item.name}
+              sector={item.sector}
+              primaryIndustry={item.primaryIndustry}
               buyState={item.buyState}
               buyPrice={item.buyPrice}
               sellPrice={item.sellPrice}

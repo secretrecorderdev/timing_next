@@ -74,8 +74,8 @@ export function TradeList({
       const rect = element.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
       const bottomSafeArea = isMobile ? 8 : 10;
-      const minHeight = isMobile ? 420 : 520;
-      const nextHeight = Math.max(minHeight, Math.floor(viewportHeight - rect.top - bottomSafeArea));
+      const minHeight = isMobile ? 420 : 640;
+      const nextHeight = Math.max(minHeight, Math.floor(viewportHeight - rect.top - bottomSafeArea)) + 120;
 
       setResolvedHeight(nextHeight);
 

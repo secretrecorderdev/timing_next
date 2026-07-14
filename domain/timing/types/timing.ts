@@ -25,6 +25,8 @@ export interface TimingListItem {
   id: number;
   code?: string | null;
   name?: string | null;
+  sector?: string | null;
+  primaryIndustry?: string | null;
   regDate?: string | null;
   buyPrice?: number | null;
   currentPrice?: number | null;

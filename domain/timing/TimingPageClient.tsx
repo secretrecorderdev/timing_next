@@ -24,6 +24,8 @@ export default function TimingPageClient({ today }: { today: string }) {
   const periodRiskQuery = usePeriodRisk(startDate, endDate, isRiskHistoryModalOpen);
   const [selectedTradeItem, setSelectedTradeItem] = useState<TradeItem | null>(null);
 
+  // console.log("아이템스", items)
+
   const summaryTargetItems = useMemo(
     () => items.filter((item) => item.buyState === 1 || item.buyState === 3),
     [items],
