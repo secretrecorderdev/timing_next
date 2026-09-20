@@ -1,0 +1,30 @@
+[debug] [2026-09-20T03:04:23.603Z] ----------------------------------------------------------------------
+[debug] [2026-09-20T03:04:23.606Z] Command:       C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\firebase-tools\lib\bin\firebase.js database:profile --project realfont-53d8c --instance realfont-53d8c
+[debug] [2026-09-20T03:04:23.606Z] CLI Version:   15.29.0
+[debug] [2026-09-20T03:04:23.606Z] Platform:      win32
+[debug] [2026-09-20T03:04:23.607Z] Node Version:  v22.13.0
+[debug] [2026-09-20T03:04:23.607Z] Detected Agent: unknown
+[debug] [2026-09-20T03:04:23.607Z] Time:          Sun Sep 20 2026 12:04:23 GMT+0900 (대한민국 표준시)
+[debug] [2026-09-20T03:04:23.607Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-09-20T03:04:39.412Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-09-20T03:04:39.413Z] > authorizing via signed-in user (realfont@gmail.com)
+[debug] [2026-09-20T03:04:39.413Z] [iam] checking project realfont-53d8c for permissions ["firebase.projects.get","firebasedatabase.instances.update"]
+[debug] [2026-09-20T03:04:39.422Z] Checked if tokens are valid: true, expires at: 1789877006254
+[debug] [2026-09-20T03:04:39.422Z] Checked if tokens are valid: true, expires at: 1789877006254
+[debug] [2026-09-20T03:04:39.423Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/realfont-53d8c:testIamPermissions [none]
+[debug] [2026-09-20T03:04:39.424Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/realfont-53d8c:testIamPermissions  x-goog-user-project=realfont-53d8c
+[debug] [2026-09-20T03:04:39.424Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/realfont-53d8c:testIamPermissions {"permissions":["firebase.projects.get","firebasedatabase.instances.update"]}
+[debug] [2026-09-20T03:04:39.805Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/realfont-53d8c:testIamPermissions 403
+[debug] [2026-09-20T03:04:39.805Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/realfont-53d8c:testIamPermissions {"error":{"code":403,"message":"Cloud Resource Manager API has not been used in project realfont-53d8c before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview?project=realfont-53d8c then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"serviceTitle":"Cloud Resource Manager API","activationUrl":"https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview?project=realfont-53d8c","consumer":"projects/realfont-53d8c","service":"cloudresourcemanager.googleapis.com","containerInfo":"realfont-53d8c"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Resource Manager API has not been used in project realfont-53d8c before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview?project=realfont-53d8c then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview?project=realfont-53d8c"}]}]}}
+[debug] [2026-09-20T03:04:39.806Z] [iam] error while checking permissions, command may fail: Request to https://cloudresourcemanager.googleapis.com/v1/projects/realfont-53d8c:testIamPermissions had HTTP Error: 403, Cloud Resource Manager API has not been used in project realfont-53d8c before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview?project=realfont-53d8c then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
+[debug] [2026-09-20T03:04:39.806Z] Checked if tokens are valid: true, expires at: 1789877006254
+[debug] [2026-09-20T03:04:39.806Z] Checked if tokens are valid: true, expires at: 1789877006254
+[debug] [2026-09-20T03:04:39.807Z] >>> [apiv2][query] GET https://firebasedatabase.googleapis.com/v1beta/projects/realfont-53d8c/locations/-/instances/realfont-53d8c [none]
+[debug] [2026-09-20T03:04:41.245Z] <<< [apiv2][status] GET https://firebasedatabase.googleapis.com/v1beta/projects/realfont-53d8c/locations/-/instances/realfont-53d8c 200
+[debug] [2026-09-20T03:04:41.245Z] <<< [apiv2][body] GET https://firebasedatabase.googleapis.com/v1beta/projects/realfont-53d8c/locations/-/instances/realfont-53d8c {"name":"projects/845178697228/locations/us-central1/instances/realfont-53d8c","project":"projects/845178697228","databaseUrl":"https://realfont-53d8c.firebaseio.com","type":"DEFAULT_DATABASE","state":"ACTIVE"}
+[debug] [2026-09-20T03:04:41.249Z] Checked if tokens are valid: true, expires at: 1789877006254
+[debug] [2026-09-20T03:04:41.249Z] Checked if tokens are valid: true, expires at: 1789877006254
+[debug] [2026-09-20T03:04:41.249Z] >>> [apiv2][query] GET https://realfont-53d8c.firebaseio.com/.settings/profile.json [none]
+[debug] [2026-09-20T03:04:41.773Z] <<< [apiv2][status] GET https://realfont-53d8c.firebaseio.com/.settings/profile.json 200
+[debug] [2026-09-20T03:04:41.773Z] <<< [apiv2][body] GET https://realfont-53d8c.firebaseio.com/.settings/profile.json [stream]

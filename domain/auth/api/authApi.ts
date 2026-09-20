@@ -25,7 +25,7 @@ export interface AuthUser {
 
 export interface AuthToken {
   accessToken: string;
-  refreshToken: string;
+  refreshToken?: string;
   tokenType: string;
   expiresIn: number;
   refreshTokenExpiresIn: number;
@@ -53,6 +53,18 @@ export interface GuestAccessLogRequest {
   platform?: string;
 }
 
+export type GuestPlatform = "WEB" | "ANDROID";
+
+export interface GuestLoginRequest {
+  deviceId: string;
+  platform: GuestPlatform;
+}
+
+export interface GuestLoginResult {
+  userId: number;
+  userUuid: string;
+}
+
 export async function loginWithGoogle(request: GoogleLoginRequest): Promise<GoogleLoginResult> {
   console.log("[jang][authApi] POST /auth/google request", {
     hasIdToken: Boolean(request.idToken),
@@ -70,7 +82,6 @@ export async function loginWithGoogle(request: GoogleLoginRequest): Promise<Goog
     hasToken: Boolean(response.data?.token?.accessToken),
     expiresIn: response.data?.token?.expiresIn,
     refreshTokenExpiresIn: response.data?.token?.refreshTokenExpiresIn,
-    hasRefreshToken: Boolean(response.data?.token?.refreshToken),
     userId: response.data?.user?.userId,
   });
 
@@ -91,7 +102,6 @@ export async function refreshAuthToken(request: RefreshTokenRequest): Promise<{ 
   console.log("[jang][authApi] POST /auth/refresh response", {
     code: response.code,
     hasAccessToken: Boolean(response.data?.token?.accessToken),
-    hasRefreshToken: Boolean(response.data?.token?.refreshToken),
     expiresIn: response.data?.token?.expiresIn,
     refreshTokenExpiresIn: response.data?.token?.refreshTokenExpiresIn,
   });
@@ -116,6 +126,15 @@ export async function getAuthMe(accessToken: string): Promise<AuthenticatedUserR
     code: response.code,
     userId: response.data?.userId,
     authType: response.data?.authType,
+  });
+
+  return response.data;
+}
+
+export async function loginAsGuest(request: GuestLoginRequest): Promise<GuestLoginResult> {
+  const response = await apiRequest<ApiResponse<GuestLoginResult>, GuestLoginRequest>("/auth/guest", {
+    method: "POST",
+    body: request,
   });
 
   return response.data;

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLoadingStore } from "@/shared/store/useLoadingStore";
 import { fetchHoldingList } from "@/domain/hold/api/holdApi";
 import { mapToTradeItem } from "@/domain/timing/mappers/tradeMapper";
+import { usePageRefreshStore } from "@/shared/store/usePageRefreshStore";
 
 type TradeItem = ReturnType<typeof mapToTradeItem>;
 
@@ -13,6 +14,7 @@ interface UseHoldingTradeItemsParams {
 
 export function useHoldingTradeItems(input: UseHoldingTradeItemsParams = {}) {
   const { setGlobalLoading } = useLoadingStore();
+  const refreshRevision = usePageRefreshStore((state) => state.holdRevision);
   const [items, setItems] = useState<TradeItem[]>([]);
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export function useHoldingTradeItems(input: UseHoldingTradeItemsParams = {}) {
     return () => {
       cancelled = true;
     };
-  }, [input.buyState, input.limit, input.offset, setGlobalLoading]);
+  }, [input.buyState, input.limit, input.offset, refreshRevision, setGlobalLoading]);
 
   return { items };
 }

@@ -19,6 +19,7 @@ export default function SignalInboxModal() {
   const prevItem = useSignalInboxStore((state) => state.prevItem);
   const nextItem = useSignalInboxStore((state) => state.nextItem);
   const confirmCurrent = useSignalInboxStore((state) => state.confirmCurrent);
+  const closeInbox = useSignalInboxStore((state) => state.closeInbox);
 
   const currentItem = items[currentIndex] ?? null;
 
@@ -35,6 +36,7 @@ export default function SignalInboxModal() {
       closeOnBackdropClick={false}
       onConfirm={confirmCurrent}
       onCancel={confirmCurrent}
+      onBack={closeInbox}
       panelClassName="max-w-lg"
     >
       <div className="space-y-4">

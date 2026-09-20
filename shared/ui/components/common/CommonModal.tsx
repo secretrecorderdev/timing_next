@@ -1,9 +1,10 @@
 "use client";
 
 import clsx from "clsx";
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { Button } from "@/shared/ui/primitives/button/Button";
 import { Text } from "@/shared/ui/primitives/text/Text";
+import { registerCommonModalBackHandler } from "@/shared/lib/commonModalBackStack";
 
 interface CommonModalProps {
   open: boolean;
@@ -18,6 +19,7 @@ interface CommonModalProps {
   closeOnBackdropClick?: boolean;
   onConfirm?: () => void;
   onCancel?: () => void;
+  onBack?: () => void;
   className?: string;
   panelClassName?: string;
   contentClassName?: string;
@@ -37,11 +39,27 @@ export default function CommonModal({
   closeOnBackdropClick = true,
   onConfirm,
   onCancel,
+  onBack,
   className,
   panelClassName,
   contentClassName,
   footerClassName,
 }: CommonModalProps) {
+  const backHandlerRef = useRef(onBack ?? onCancel);
+  const canCloseOnBack = typeof (onBack ?? onCancel) === "function";
+
+  useEffect(() => {
+    backHandlerRef.current = onBack ?? onCancel;
+  }, [onBack, onCancel]);
+
+  useEffect(() => {
+    if (!open || !canCloseOnBack) {
+      return;
+    }
+
+    return registerCommonModalBackHandler(() => backHandlerRef.current?.());
+  }, [canCloseOnBack, open]);
+
   if (!open) return null;
 
   const hasFooter = !hideConfirmButton || !hideCancelButton;

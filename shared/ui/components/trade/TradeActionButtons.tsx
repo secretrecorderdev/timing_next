@@ -20,7 +20,7 @@ export function TradeActionButtons({ code, className }: TradeActionButtonsProps)
   const tossHref = `https://contents.tossinvest.com/stocks/A${code}`;
   const localeMatch = pathname.match(/^\/(ko|en)(?=\/|$)/);
   const localePrefix = localeMatch?.[0] ?? "/ko";
-
+  const isItemDetail = /\/item\/[^/]+$/.test(pathname);
   const handleCopy = async (event?: React.MouseEvent) => {
     event?.stopPropagation();
 
@@ -34,19 +34,21 @@ export function TradeActionButtons({ code, className }: TradeActionButtonsProps)
 
   const handleChartClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    router.push(`${localePrefix}/item?code=${code}`);
+    router.push(`${localePrefix}/item/${code}`);
   };
 
   return (
     <div className={className ?? "mt-1 flex flex-wrap justify-center gap-2 sm:mt-1 sm:justify-center sm:gap-2.5"}>
-      <button
-        type="button"
-        onClick={handleChartClick}
-        title="차트 보기"
-        className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full"
-      >
-        <BsGraphUp className="cursor-pointer text-[24px] text-gray-500 sm:text-[28px]" />
-      </button>
+      {
+        !isItemDetail && <button
+          type="button"
+          onClick={handleChartClick}
+          title="차트 보기"
+          className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full"
+        >
+          <BsGraphUp className="cursor-pointer text-[24px] text-gray-500 sm:text-[28px]" />
+        </button>
+      }
       <button
         type="button"
         onClick={handleCopy}

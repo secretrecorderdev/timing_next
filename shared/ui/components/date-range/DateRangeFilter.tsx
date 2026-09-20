@@ -82,8 +82,8 @@ export function DateRangeFilter({
 
   return (
     <section className="mb-4 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm sm:p-4">
-      <div className="flex flex-col gap-2 pb-1 sm:flex-row">
-        <label className="flex min-w-0 flex-1 flex-col gap-1 text-sm text-gray-600 sm:min-w-[156px]">
+      <div className="grid grid-cols-2 gap-2 pb-1">
+        <label className="flex min-w-0 flex-col gap-1 text-sm text-gray-600">
           <span className="ml-1 font-medium text-gray-800">시작일</span>
           <input
             type="date"
@@ -91,11 +91,11 @@ export function DateRangeFilter({
             max={endInputValue || maxDate}
             value={startInputValue}
             onChange={(event) => handleDateChange("start", event.target.value)}
-            className="h-11 min-w-0 cursor-pointer rounded-xl border border-gray-300 px-3 text-base text-gray-900 outline-none transition focus:border-emerald-500"
+            className="h-11 w-full min-w-0 cursor-pointer rounded-xl border border-gray-300 px-2 text-sm text-gray-900 outline-none transition focus:border-emerald-500 sm:px-3 sm:text-base"
           />
         </label>
 
-        <label className="flex min-w-0 flex-1 flex-col gap-1 text-sm text-gray-600 sm:min-w-[156px]">
+        <label className="flex min-w-0 flex-col gap-1 text-sm text-gray-600">
           <span className="ml-1 font-medium text-gray-800">종료일</span>
           <input
             type="date"
@@ -103,7 +103,7 @@ export function DateRangeFilter({
             max={maxDate}
             value={endInputValue}
             onChange={(event) => handleDateChange("end", event.target.value)}
-            className="h-11 min-w-0 cursor-pointer rounded-xl border border-gray-300 px-3 text-base text-gray-900 outline-none transition focus:border-emerald-500 disabled:bg-gray-100 disabled:text-gray-400"
+            className="h-11 w-full min-w-0 cursor-pointer rounded-xl border border-gray-300 px-2 text-sm text-gray-900 outline-none transition focus:border-emerald-500 disabled:bg-gray-100 disabled:text-gray-400 sm:px-3 sm:text-base"
           />
         </label>
       </div>

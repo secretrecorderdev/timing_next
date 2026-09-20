@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { TradeList } from "@/shared/ui/components/trade/TradeList";
 import { TradeDetailModal } from "@/shared/ui/components/trade/TradeDetailModal";
 import type { TradeItem } from "@/shared/ui/components/trade/trade.types";
@@ -13,16 +13,26 @@ import { useTimingTradeItems } from "@/domain/timing/hooks/useTimingTradeItems";
 import { useLatestRisk } from "@/domain/risk/hooks/useLatestRisk";
 import { usePeriodRisk } from "@/domain/risk/hooks/usePeriodRisk";
 import { formatRiskDate, getRiskLevelBadgeClass, getRiskLevelLabel, RiskLevelKrMap } from "@/domain/risk/types/risk";
+import { usePageRefreshStore } from "@/shared/store/usePageRefreshStore";
 
 export default function TimingPageClient({ today }: { today: string }) {
   const [range, setRange] = useState(() => toRangeByPreset("3m", today));
   const { startDate, endDate } = range;
-  const { items, rawItems, summary } = useTimingTradeItems({ startDate, endDate, limit: 500, offset: 0 });
+  const { items, rawItems, summary, refetch: refetchTimingItems } = useTimingTradeItems({ startDate, endDate, limit: 500, offset: 0 });
   const latestRiskQuery = useLatestRisk();
+  const refetchLatestRisk = latestRiskQuery.refetch;
+  const refreshRevision = usePageRefreshStore((state) => state.timingRevision);
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
   const [isRiskHistoryModalOpen, setIsRiskHistoryModalOpen] = useState(false);
   const periodRiskQuery = usePeriodRisk(startDate, endDate, isRiskHistoryModalOpen);
   const [selectedTradeItem, setSelectedTradeItem] = useState<TradeItem | null>(null);
+
+  useEffect(() => {
+    if (refreshRevision === 0) {
+      return;
+    }
+    void Promise.all([refetchTimingItems(), refetchLatestRisk()]);
+  }, [refetchLatestRisk, refetchTimingItems, refreshRevision]);
 
   // console.log("아이템스", items)
 
@@ -218,9 +228,9 @@ export default function TimingPageClient({ today }: { today: string }) {
                 표시할 위험도별 매수가 없습니다.
               </div>
             ) : (
-              riskTradeSummaryItems.map((item) => (
+              riskTradeSummaryItems.map((item, index) => (
                 <div
-                  key={item.label}
+                  key={`${item.label}-${index}`}
                   className={`rounded-xl border px-4 py-3 ${getRiskLevelBadgeClass(
                     Object.entries(RiskLevelKrMap).find(([, label]) => label === item.label)?.[0]
                       ? Number(Object.entries(RiskLevelKrMap).find(([, label]) => label === item.label)?.[0])
@@ -245,7 +255,7 @@ export default function TimingPageClient({ today }: { today: string }) {
               <div className="py-6 text-center text-sm text-gray-500">표시할 위험도 이력이 없습니다.</div>
             ) : (
               riskHistoryItems.map((risk) => (
-                risk.riskLevel == 0 ? <></>
+                risk.riskLevel == 0 ? null
                 :
                 <div
                   key={risk.id}

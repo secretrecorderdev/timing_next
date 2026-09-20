@@ -4,14 +4,16 @@ import "@/app/globals.css";
 import { LanguageProvider } from "@/shared/context/LanguageContext";
 import { QueryProvider } from "@/shared/providers/QueryProvider";
 import { baseMetadata } from "@/shared/lib/metadata";
-import { Header } from "@/shared/ui/layout/Header";
 import NavBar from "@/shared/ui/layout/NavBar";
+import AndroidBackNavigation from "@/shared/ui/layout/AndroidBackNavigation";
+import AndroidNotificationControls from "@/shared/ui/layout/AndroidNotificationControls";
 import GlobalLoading from "@/shared/ui/feedback/GlobalLoading";
 import GlobalToast from "@/shared/ui/feedback/GlobalToast";
 import GlobalNotification from "@/shared/ui/feedback/GlobalNotification";
 import SignalInboxModal from "@/shared/ui/feedback/SignalInboxModal";
 import { TimingTradeItemsBootstrap } from "@/shared/bootstrap/TimingTradeItemsBootstrap";
 import GuestAccessBootstrap from "@/shared/bootstrap/GuestAccessBootstrap";
+
 // import { TabItem } from "@/ui/components/HorizontalTab/HorizontalTab.types";
 export const metadata: Metadata = baseMetadata;
 
@@ -38,7 +40,8 @@ export default async function RootLayout({
           <LanguageProvider>
             <TimingTradeItemsBootstrap />
             <GuestAccessBootstrap />
-            <Header />
+            <AndroidBackNavigation />
+            <AndroidNotificationControls />
             <NavBar />
             {/* <HorizontalTab
               tabs={tabs}

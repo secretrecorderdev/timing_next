@@ -39,7 +39,7 @@ let interceptorsInstalled = false;
 
 function shouldSkipAuth(config?: AxiosRequestConfig) {
   const url = config?.url ?? "";
-  return url.includes("/auth/google") || url.includes("/auth/refresh");
+  return url.includes("/auth/google") || url.includes("/auth/guest") || url.includes("/auth/refresh");
 }
 
 async function refreshAccessToken(): Promise<AuthTokenPayload | null> {
@@ -79,14 +79,18 @@ function installAuthInterceptors() {
 
   apiClient.interceptors.request.use((config) => {
     const token = useAuthStore.getState().token?.accessToken;
+    const skipAuth = shouldSkipAuth(config);
 
-    if (!shouldSkipAuth(config) && token) {
+    console.log("[jang][axios] request", {
+      url: config.url,
+      method: config.method,
+      skipAuth,
+      hasAccessToken: !!token,
+    });
+
+    if (!skipAuth && token) {
       config.headers = config.headers ?? {};
       config.headers.Authorization = `Bearer ${token}`;
-      console.log("[jang][axios] attached access token", {
-        url: config.url,
-        method: config.method,
-      });
     }
 
     return config;

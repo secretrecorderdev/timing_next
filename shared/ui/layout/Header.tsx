@@ -5,18 +5,41 @@ import Image from "next/image";
 import { useState } from "react";
 import axios from "axios";
 import { usePathname } from "next/navigation";
+import { MdRefresh } from "react-icons/md";
 import { getAuthMe } from "@/domain/auth/api/authApi";
+import {
+  detectNotificationRuntime,
+  type NotificationRuntime,
+} from "@/shared/lib/notificationRuntime";
 import CommonModal from "@/shared/ui/components/common/CommonModal";
+import NotificationPlatformModal from "@/shared/ui/components/common/NotificationPlatformModal";
 import { Text } from "../primitives/text/Text";
 import { playNotificationSound, unlockNotificationSound } from "@/shared/lib/notificationSound";
 import { useAuthStore } from "@/shared/store/useAuthStore";
 import { useNotificationStore } from "@/shared/store/useNotificationStore";
+import { usePageRefreshStore } from "@/shared/store/usePageRefreshStore";
 import { useToastStore } from "@/shared/store/useToastStore";
+import { getPageRefreshTarget } from "@/shared/lib/pageRefresh";
+import { getAndroidNotificationToggleAction } from "@/shared/lib/notificationPrompt";
 
-export function Header() {
+interface HeaderProps {
+  isAndroidApp?: boolean;
+  androidNotificationEnabled?: boolean;
+  onOpenAndroidNotificationPrompt?: () => void;
+  onAndroidNotificationDisabled?: () => void;
+}
+
+export function Header({
+  isAndroidApp = false,
+  androidNotificationEnabled = false,
+  onOpenAndroidNotificationPrompt,
+  onAndroidNotificationDisabled,
+}: HeaderProps = {}) {
   const pathname = usePathname() ?? "/ko/timing";
   const localePrefix = pathname.match(/^\/(ko|en)(?=\/|$)/)?.[0] ?? "/ko";
+  const refreshTarget = getPageRefreshTarget(pathname);
   const { showToast } = useToastStore();
+  const requestRefresh = usePageRefreshStore((state) => state.requestRefresh);
   const soundEnabled = useNotificationStore((state) => state.soundEnabled);
   const setSoundEnabled = useNotificationStore((state) => state.setSoundEnabled);
   const user = useAuthStore((state) => state.user);
@@ -25,6 +48,17 @@ export function Header() {
   const logout = useAuthStore((state) => state.logout);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const [isTestingAuth, setIsTestingAuth] = useState(false);
+  const [notificationModalRuntime, setNotificationModalRuntime] = useState<
+    Exclude<NotificationRuntime, "ANDROID_APP"> | null
+  >(null);
+
+  const getNotificationRuntime = () =>
+    detectNotificationRuntime({
+      androidBridge: window.TimingAndroid,
+      iosBridge: window.TimingIOS,
+      navigator,
+    });
+
 
   const handleAuthTest = async () => {
     if (!token?.accessToken || isTestingAuth) {
@@ -66,6 +100,41 @@ export function Header() {
     showToast(unlocked ? "알림 소리를 켰습니다" : "이 브라우저에서는 먼저 화면을 터치/클릭해야 소리가 납니다");
   };
 
+  const handleNotificationClick = () => {
+    const runtime = getNotificationRuntime();
+    if (runtime !== "ANDROID_APP") {
+      setNotificationModalRuntime(runtime);
+      return;
+    }
+
+    const bridge = window.TimingAndroid;
+    if (!bridge?.setNotificationEnabled) {
+      showToast("Android 앱 알림 기능이 아직 연결되지 않았습니다.");
+      return;
+    }
+
+    try {
+      const current = bridge.getNotificationEnabled?.() ?? androidNotificationEnabled;
+      if (getAndroidNotificationToggleAction(current) === "OPEN_PROMPT") {
+        onOpenAndroidNotificationPrompt?.();
+        return;
+      }
+
+      bridge.setNotificationEnabled(false);
+      onAndroidNotificationDisabled?.();
+      showToast("푸시 알림을 껐습니다.");
+    } catch (error) {
+      console.error("[notification] failed to update Android notification status", error);
+      showToast("푸시 알림 설정을 변경하지 못했습니다.");
+    }
+  };
+
+  const handleRefresh = () => {
+    if (refreshTarget) {
+      requestRefresh(refreshTarget);
+    }
+  };
+
   return (
     <header className="flex w-full flex-col gap-3 border-b border-white/10 px-0 py-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2">
@@ -101,12 +170,19 @@ export function Header() {
 
       <div className="flex w-full flex-wrap items-center justify-between gap-2 text-sm font-semibold sm:w-auto sm:justify-end sm:gap-4">
         <div className="flex items-center gap-2">
-          <button
+          {/* <button
             type="button"
             onClick={() => void handleAuthTest()}
             className="rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700 transition hover:border-amber-300"
           >
             {isTestingAuth ? "인증 테스트중" : "인증 테스트"}
+          </button> */}
+          <button
+            type="button"
+            onClick={handleNotificationClick}
+            className={`rounded-full border px-3 py-2 text-xs font-semibold transition ${androidNotificationEnabled ? "border-emerald-300 bg-emerald-50 text-emerald-700" : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"}`}
+          >
+            {isAndroidApp ? `알림 ${androidNotificationEnabled ? "ON" : "OFF"}` : "알림 ON/OFF"}
           </button>
           <button
             type="button"
@@ -115,8 +191,19 @@ export function Header() {
           >
             소리 {soundEnabled ? "ON" : "OFF"}
           </button>
+          {refreshTarget ? (
+            <button
+              type="button"
+              onClick={handleRefresh}
+              aria-label="새로고침"
+              title="새로고침"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 transition hover:border-gray-300 hover:text-emerald-600"
+            >
+              <MdRefresh aria-hidden="true" className="h-5 w-5" />
+            </button>
+          ) : null}
         </div>
-        <div className="flex items-center gap-2 whitespace-nowrap text-sm text-gray-700">
+        {/* <div className="flex items-center gap-2 whitespace-nowrap text-sm text-gray-700">
           {!hydrated ? (
             <span className="text-xs text-gray-400">로그인 확인중...</span>
           ) : user ? (
@@ -138,8 +225,14 @@ export function Header() {
               로그인
             </Link>
           )}
-        </div>
+        </div> */}
       </div>
+
+      <NotificationPlatformModal
+        open={notificationModalRuntime !== null}
+        runtime={notificationModalRuntime}
+        onClose={() => setNotificationModalRuntime(null)}
+      />
 
       <CommonModal
         open={logoutModalOpen}

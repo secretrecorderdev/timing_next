@@ -1,56 +1,49 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { logGuestAccess } from "@/domain/auth/api/authApi";
+import { loginAsGuest } from "@/domain/auth/api/authApi";
+import {
+  createInstallationUuid,
+  detectGuestPlatform,
+  getOrCreateInstallationId,
+} from "@/shared/lib/guestInstallation";
 import { useAuthStore } from "@/shared/store/useAuthStore";
+import { useGuestStore } from "@/shared/store/useGuestStore";
 
-const GUEST_DEVICE_ID_KEY = "timing-guest-device-id";
-const GUEST_ACCESS_LOGGED_KEY = "timing-guest-access-logged";
+let guestLoginPromise: ReturnType<typeof loginAsGuest> | null = null;
 
-function getGuestDeviceId() {
-  const existing = localStorage.getItem(GUEST_DEVICE_ID_KEY);
-  if (existing) {
-    return existing;
+function loginAsGuestOnce(deviceId: string, platform: "WEB" | "ANDROID") {
+  if (!guestLoginPromise) {
+    guestLoginPromise = loginAsGuest({ deviceId, platform }).catch((error) => {
+      guestLoginPromise = null;
+      throw error;
+    });
   }
 
-  const next = crypto.randomUUID();
-  localStorage.setItem(GUEST_DEVICE_ID_KEY, next);
-  return next;
+  return guestLoginPromise;
 }
 
-export default function GuestAccessBootstrap() {
-  const pathname = usePathname() ?? "/";
+export default function GuestAuthBootstrap() {
   const hydrated = useAuthStore((state) => state.hydrated);
   const user = useAuthStore((state) => state.user);
+  const setGuestSession = useGuestStore((state) => state.setGuestSession);
 
   useEffect(() => {
     if (!hydrated || user) {
       return;
     }
 
-    const alreadyLogged = localStorage.getItem(GUEST_ACCESS_LOGGED_KEY);
-    if (alreadyLogged === "true") {
-      console.log("[jang][guestAccess] already logged, skip", { pathname });
-      return;
-    }
+    const installationId = getOrCreateInstallationId(localStorage, createInstallationUuid);
+    const platform = detectGuestPlatform(window.TimingAndroid);
 
-    const deviceId = getGuestDeviceId();
-
-    void logGuestAccess({
-      deviceId,
-      targetPath: pathname,
-      appVersion: "web",
-      platform: "WEB",
-    })
-      .then(() => {
-        localStorage.setItem(GUEST_ACCESS_LOGGED_KEY, "true");
-        console.log("[jang][guestAccess] logged first guest access", { deviceId, pathname });
+    void loginAsGuestOnce(installationId, platform)
+      .then((guest) => {
+        setGuestSession(installationId, platform, guest);
       })
       .catch((error) => {
-        console.error("[jang][guestAccess] failed to log guest access", error);
+        console.error("[guestAuth] guest login failed", error);
       });
-  }, [hydrated, pathname, user]);
+  }, [hydrated, setGuestSession, user]);
 
   return null;
 }
