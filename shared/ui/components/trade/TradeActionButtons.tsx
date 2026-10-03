@@ -16,7 +16,8 @@ export function TradeActionButtons({ code, className }: TradeActionButtonsProps)
   const router = useRouter();
   const pathname = usePathname() ?? "/ko/timing";
   const { showToast } = useToastStore();
-  const naverHref = `https://finance.naver.com/item/main.nhn?code=${code}`;
+  // const naverHref = `https://finance.naver.com/item/main.nhn?code=${code}`;
+  const naverHref = `https://stock.naver.com/domestic/stock/${code}/price`;
   const tossHref = `https://contents.tossinvest.com/stocks/A${code}`;
   const localeMatch = pathname.match(/^\/(ko|en)(?=\/|$)/);
   const localePrefix = localeMatch?.[0] ?? "/ko";
