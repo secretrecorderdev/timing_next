@@ -14,9 +14,10 @@ interface TradeCardProps {
 function TradeCardComponent({ item, onClick }: TradeCardProps) {
   const isProfit = item.profit >= 0;
   const isZero = item.profit === 0;
+  const isSold = item.buyState === 2;
   const profitClassName = cn(
     "text-medium font-medium",
-    isZero ? "text-gray-500" : isProfit ? "text-red-500" : "text-blue-500"
+    isSold || isZero ? "text-gray-500" : isProfit ? "text-red-500" : "text-blue-500"
   );
 
   return (
