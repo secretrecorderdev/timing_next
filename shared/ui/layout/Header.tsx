@@ -21,6 +21,10 @@ import { usePageRefreshStore } from "@/shared/store/usePageRefreshStore";
 import { useToastStore } from "@/shared/store/useToastStore";
 import { getPageRefreshTarget } from "@/shared/lib/pageRefresh";
 import { getAndroidNotificationToggleAction } from "@/shared/lib/notificationPrompt";
+import {
+  getTimingAndroidBridgeClient,
+  isTimingAndroidApp,
+} from "@/shared/lib/timingAndroidBridge";
 
 interface HeaderProps {
   isAndroidApp?: boolean;
@@ -54,7 +58,7 @@ export function Header({
 
   const getNotificationRuntime = () =>
     detectNotificationRuntime({
-      androidBridge: window.TimingAndroid,
+      isAndroidApp: isTimingAndroidApp(),
       iosBridge: window.TimingIOS,
       navigator,
     });
@@ -100,27 +104,27 @@ export function Header({
     showToast(unlocked ? "알림 소리를 켰습니다" : "이 브라우저에서는 먼저 화면을 터치/클릭해야 소리가 납니다");
   };
 
-  const handleNotificationClick = () => {
+  const handleNotificationClick = async () => {
     const runtime = getNotificationRuntime();
     if (runtime !== "ANDROID_APP") {
       setNotificationModalRuntime(runtime);
       return;
     }
 
-    const bridge = window.TimingAndroid;
-    if (!bridge?.setNotificationEnabled) {
+    const bridge = getTimingAndroidBridgeClient();
+    if (!bridge) {
       showToast("Android 앱 알림 기능이 아직 연결되지 않았습니다.");
       return;
     }
 
     try {
-      const current = bridge.getNotificationEnabled?.() ?? androidNotificationEnabled;
+      const current = await bridge.getNotificationEnabled();
       if (getAndroidNotificationToggleAction(current) === "OPEN_PROMPT") {
         onOpenAndroidNotificationPrompt?.();
         return;
       }
 
-      bridge.setNotificationEnabled(false);
+      await bridge.setNotificationEnabled(false);
       onAndroidNotificationDisabled?.();
       showToast("푸시 알림을 껐습니다.");
     } catch (error) {

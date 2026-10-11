@@ -1,5 +1,3 @@
-import type { TimingAndroidBridge } from "@/shared/lib/guestInstallation";
-
 export type NotificationRuntime =
   | "ANDROID_APP"
   | "IOS_APP"
@@ -18,7 +16,7 @@ interface NavigatorLike {
 }
 
 interface NotificationRuntimeInput {
-  androidBridge?: TimingAndroidBridge;
+  isAndroidApp: boolean;
   iosBridge?: TimingIosBridge;
   navigator: NavigatorLike;
 }
@@ -32,11 +30,11 @@ function bridgePlatform(bridge?: { getPlatform?: () => string }) {
 }
 
 export function detectNotificationRuntime({
-  androidBridge,
+  isAndroidApp,
   iosBridge,
   navigator,
 }: NotificationRuntimeInput): NotificationRuntime {
-  if (bridgePlatform(androidBridge) === "ANDROID") {
+  if (isAndroidApp) {
     return "ANDROID_APP";
   }
   if (bridgePlatform(iosBridge) === "IOS") {

@@ -7,6 +7,7 @@ import {
   detectGuestPlatform,
   getOrCreateInstallationId,
 } from "@/shared/lib/guestInstallation";
+import { isTimingAndroidApp } from "@/shared/lib/timingAndroidBridge";
 import { useAuthStore } from "@/shared/store/useAuthStore";
 import { useGuestStore } from "@/shared/store/useGuestStore";
 
@@ -34,7 +35,7 @@ export default function GuestAuthBootstrap() {
     }
 
     const installationId = getOrCreateInstallationId(localStorage, createInstallationUuid);
-    const platform = detectGuestPlatform(window.TimingAndroid);
+    const platform = detectGuestPlatform(isTimingAndroidApp());
 
     void loginAsGuestOnce(installationId, platform)
       .then((guest) => {

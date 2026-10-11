@@ -5,6 +5,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { handleAndroidBack } from "@/shared/lib/androidBackNavigation";
 import { closeTopmostCommonModal } from "@/shared/lib/commonModalBackStack";
 import { detectNotificationRuntime } from "@/shared/lib/notificationRuntime";
+import {
+  getTimingAndroidBridgeClient,
+  isTimingAndroidApp,
+} from "@/shared/lib/timingAndroidBridge";
 import CommonModal from "@/shared/ui/components/common/CommonModal";
 import { Text } from "@/shared/ui/primitives/text/Text";
 
@@ -15,7 +19,7 @@ export default function AndroidBackNavigation() {
 
   useEffect(() => {
     const runtime = detectNotificationRuntime({
-      androidBridge: window.TimingAndroid,
+      isAndroidApp: isTimingAndroidApp(),
       iosBridge: window.TimingIOS,
       navigator,
     });
@@ -43,8 +47,8 @@ export default function AndroidBackNavigation() {
   }, [pathname, router]);
 
   const handleExit = () => {
-    const bridge = window.TimingAndroid;
-    if (typeof bridge?.finishApp !== "function") {
+    const bridge = getTimingAndroidBridgeClient();
+    if (!bridge) {
       console.error("[navigation] Android finishApp bridge is unavailable");
       return;
     }

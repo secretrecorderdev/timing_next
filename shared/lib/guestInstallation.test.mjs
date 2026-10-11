@@ -72,9 +72,7 @@ test("기존 guest device id를 installationId로 이전해 재사용한다", ()
   assert.equal(storage.getItem(INSTALLATION_ID_STORAGE_KEY), "legacy-device-id");
 });
 
-test("명시적인 Android 브리지가 ANDROID를 반환할 때만 Android WebView로 판별한다", () => {
-  assert.equal(detectGuestPlatform({ getPlatform: () => "ANDROID" }), "ANDROID");
-  assert.equal(detectGuestPlatform({ getPlatform: () => "android" }), "ANDROID");
-  assert.equal(detectGuestPlatform({ getPlatform: () => "WEB" }), "WEB");
-  assert.equal(detectGuestPlatform(undefined), "WEB");
+test("검증된 Android 앱 런타임만 Android 게스트 플랫폼으로 판별한다", () => {
+  assert.equal(detectGuestPlatform(true), "ANDROID");
+  assert.equal(detectGuestPlatform(false), "WEB");
 });

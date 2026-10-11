@@ -3,13 +3,6 @@ export const LEGACY_GUEST_DEVICE_ID_STORAGE_KEY = "timing-guest-device-id";
 
 export type GuestPlatform = "WEB" | "ANDROID";
 
-export interface TimingAndroidBridge {
-  getPlatform?: () => string;
-  getNotificationEnabled?: () => boolean;
-  setNotificationEnabled?: (enabled: boolean) => void;
-  finishApp?: () => void;
-}
-
 type InstallationStorage = Pick<Storage, "getItem" | "setItem">;
 type InstallationCrypto = Pick<Crypto, "getRandomValues"> &
   Partial<Pick<Crypto, "randomUUID">>;
@@ -47,10 +40,6 @@ export function getOrCreateInstallationId(
   return installationId;
 }
 
-export function detectGuestPlatform(bridge: TimingAndroidBridge | undefined): GuestPlatform {
-  try {
-    return bridge?.getPlatform?.().toUpperCase() === "ANDROID" ? "ANDROID" : "WEB";
-  } catch {
-    return "WEB";
-  }
+export function detectGuestPlatform(isAndroidApp: boolean): GuestPlatform {
+  return isAndroidApp ? "ANDROID" : "WEB";
 }

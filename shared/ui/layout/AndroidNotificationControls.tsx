@@ -3,6 +3,10 @@
 import { useEffect, useState } from "react";
 import { detectNotificationRuntime } from "@/shared/lib/notificationRuntime";
 import {
+  getTimingAndroidBridgeClient,
+  isTimingAndroidApp,
+} from "@/shared/lib/timingAndroidBridge";
+import {
   ANDROID_NOTIFICATION_PROMPT_SNOOZE_KEY,
   createNotificationPromptSnoozeUntil,
   shouldShowAndroidNotificationPrompt,
@@ -18,52 +22,61 @@ export default function AndroidNotificationControls() {
   const [promptOpen, setPromptOpen] = useState(false);
 
   useEffect(() => {
-    const bridge = window.TimingAndroid;
+    const bridge = getTimingAndroidBridgeClient();
     const runtime = detectNotificationRuntime({
-      androidBridge: bridge,
+      isAndroidApp: isTimingAndroidApp(),
       iosBridge: window.TimingIOS,
       navigator,
     });
 
-    if (runtime !== "ANDROID_APP" || typeof bridge?.getNotificationEnabled !== "function") {
+    if (runtime !== "ANDROID_APP" || !bridge) {
       return;
     }
 
+    let cancelled = false;
     const openTimer = window.setTimeout(() => {
-      try {
-        const enabled = Boolean(bridge?.getNotificationEnabled?.());
-        const snoozeUntil = localStorage.getItem(ANDROID_NOTIFICATION_PROMPT_SNOOZE_KEY);
+      void bridge
+        .getNotificationEnabled()
+        .then((enabled) => {
+          if (cancelled) return;
 
-        setIsAndroidApp(true);
-        setNotificationEnabled(enabled);
-        setPromptOpen(
-          shouldShowAndroidNotificationPrompt({
-            runtime,
-            notificationEnabled: enabled,
-            snoozeUntil,
-          }),
-        );
-      } catch (error) {
-        console.error("[notification] failed to initialize Android notification prompt", error);
-      }
+          const snoozeUntil = localStorage.getItem(ANDROID_NOTIFICATION_PROMPT_SNOOZE_KEY);
+          setIsAndroidApp(true);
+          setNotificationEnabled(enabled);
+          setPromptOpen(
+            shouldShowAndroidNotificationPrompt({
+              runtime,
+              notificationEnabled: enabled,
+              snoozeUntil,
+            }),
+          );
+        })
+        .catch((error) => {
+          console.error("[notification] failed to initialize Android notification prompt", error);
+        });
     }, 0);
 
-    return () => window.clearTimeout(openTimer);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(openTimer);
+    };
   }, []);
 
   const handleEnable = () => {
-    const bridge = window.TimingAndroid;
-    if (typeof bridge?.setNotificationEnabled !== "function") {
+    const bridge = getTimingAndroidBridgeClient();
+    if (!bridge) {
       return;
     }
 
-    try {
-      bridge.setNotificationEnabled(true);
-      setNotificationEnabled(true);
-      setPromptOpen(false);
-    } catch (error) {
-      console.error("[notification] failed to enable Android notifications", error);
-    }
+    void bridge
+      .setNotificationEnabled(true)
+      .then(() => {
+        setNotificationEnabled(true);
+        setPromptOpen(false);
+      })
+      .catch((error) => {
+        console.error("[notification] failed to enable Android notifications", error);
+      });
   };
 
   const handleSnooze = () => {
