@@ -18,9 +18,15 @@ function getBuyStateColor(buyState: number) {
       return "text-gray-500";
     case 3:
       return "text-blue-500";
+    case 11:
+      return "text-purple-500";
+    case 12:
+      return "text-gray-500";
+    case 13:
+      return "text-green-500";
     case 0:
     default:
-      return "text-purple-500";
+      return "text-black";
   }
 }
 
@@ -32,6 +38,12 @@ function getBuyStateText(buyState: number, buyPrice: number, sellPrice?: number 
       return `매수(${buyPrice.toLocaleString()}원, 매도됨)`;
     case 3:
       return `매도(${(sellPrice ?? buyPrice).toLocaleString()}원)`;
+    case 11:
+      return `대주매도(${(buyPrice).toLocaleString()}원)`;
+    case 12:
+      return `대주매도(${(buyPrice).toLocaleString()}원, 청산됨)`;
+    case 13:
+      return `대주청산(${(sellPrice ?? buyPrice).toLocaleString()}원)`;
     case 0:
     default:
       return "매수(미확정)";

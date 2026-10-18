@@ -37,21 +37,23 @@ export default function TimingPageClient({ today }: { today: string }) {
   // console.log("아이템스", items)
 
   const summaryTargetItems = useMemo(
-    () => items.filter((item) => item.buyState === 1 || item.buyState === 3),
+    () => items.filter((item) => item.buyState === 1 || item.buyState === 3 || item.buyState === 11 || item.buyState === 13),
     [items],
   );
   const buySignalCount = useMemo(
-    () => items.filter((item) => item.buyState === 1 || item.buyState === 2).length,
+    () => items.filter((item) => item.buyState === 1 || item.buyState === 2 || item.buyState === 11 || item.buyState === 12).length,
     [items],
   );
   const sellSignalCount = useMemo(
-    () => items.filter((item) => item.buyState === 3).length,
+    () => items.filter((item) => item.buyState === 3 || item.buyState === 13).length,
     [items],
   );
   const totalProfit = useMemo(
     () => summaryTargetItems.reduce((sum, item) => sum + item.profit, 0),
     [summaryTargetItems],
   );
+
+  console.log("토탈 summaryTargetItems", summaryTargetItems )
   const totalHoldingDays = useMemo(
     () => summaryTargetItems.reduce((sum, item) => sum + item.holdingDays, 0),
     [summaryTargetItems],
