@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import axios from "axios";
 import { usePathname } from "next/navigation";
-import { MdRefresh } from "react-icons/md";
+import { MdRefresh, MdTrendingDown, MdTrendingUp, MdViewAgenda, MdViewCompact, MdViewList } from "react-icons/md";
 import { getAuthMe } from "@/domain/auth/api/authApi";
 import {
   detectNotificationRuntime,
@@ -18,6 +18,7 @@ import { playNotificationSound, unlockNotificationSound } from "@/shared/lib/not
 import { useAuthStore } from "@/shared/store/useAuthStore";
 import { useNotificationStore } from "@/shared/store/useNotificationStore";
 import { usePageRefreshStore } from "@/shared/store/usePageRefreshStore";
+import { useTradeViewStore } from "@/shared/store/useTradeViewStore";
 import { useToastStore } from "@/shared/store/useToastStore";
 import { getPageRefreshTarget } from "@/shared/lib/pageRefresh";
 import { getAndroidNotificationToggleAction } from "@/shared/lib/notificationPrompt";
@@ -44,6 +45,10 @@ export function Header({
   const refreshTarget = getPageRefreshTarget(pathname);
   const { showToast } = useToastStore();
   const requestRefresh = usePageRefreshStore((state) => state.requestRefresh);
+  const tradeTypeFilter = useTradeViewStore((state) => state.tradeTypeFilter);
+  const cycleTradeTypeFilter = useTradeViewStore((state) => state.cycleTradeTypeFilter);
+  const tradeViewMode = useTradeViewStore((state) => state.viewMode);
+  const toggleTradeViewMode = useTradeViewStore((state) => state.toggleViewMode);
   const soundEnabled = useNotificationStore((state) => state.soundEnabled);
   const setSoundEnabled = useNotificationStore((state) => state.setSoundEnabled);
   const user = useAuthStore((state) => state.user);
@@ -181,6 +186,42 @@ export function Header({
           >
             {isTestingAuth ? "인증 테스트중" : "인증 테스트"}
           </button> */}
+          {refreshTarget === "timing" ? (
+            <button
+              type="button"
+              onClick={cycleTradeTypeFilter}
+              aria-label={
+                tradeTypeFilter === "all"
+                  ? "현재 전체 보기, 매수만 보기로 전환"
+                  : tradeTypeFilter === "buy"
+                    ? "현재 매수만 보기, 대주매도만 보기로 전환"
+                    : "현재 대주매도만 보기, 전체 보기로 전환"
+              }
+              title={tradeTypeFilter === "all" ? "전체" : tradeTypeFilter === "buy" ? "매수만" : "대주매도만"}
+              className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition ${tradeTypeFilter === "buy" ? "border-red-300 bg-red-50 text-red-600" : tradeTypeFilter === "short" ? "border-blue-300 bg-blue-50 text-blue-600" : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"}`}
+            >
+              {tradeTypeFilter === "all" ? (
+                <MdViewList aria-hidden="true" className="h-5 w-5" />
+              ) : tradeTypeFilter === "buy" ? (
+                <MdTrendingUp aria-hidden="true" className="h-5 w-5" />
+              ) : (
+                <MdTrendingDown aria-hidden="true" className="h-5 w-5" />
+              )}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={toggleTradeViewMode}
+            aria-label={tradeViewMode === "detailed" ? "간단보기로 전환" : "상세보기로 전환"}
+            title={tradeViewMode === "detailed" ? "간단보기" : "상세보기"}
+            className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition ${tradeViewMode === "compact" ? "border-emerald-300 bg-emerald-50 text-emerald-700" : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"}`}
+          >
+            {tradeViewMode === "detailed" ? (
+              <MdViewCompact aria-hidden="true" className="h-5 w-5" />
+            ) : (
+              <MdViewAgenda aria-hidden="true" className="h-5 w-5" />
+            )}
+          </button>
           <button
             type="button"
             onClick={handleNotificationClick}

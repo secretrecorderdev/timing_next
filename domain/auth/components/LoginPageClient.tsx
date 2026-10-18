@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { loginWithGoogle, type AuthUser } from "@/domain/auth/api/authApi";
+import { loginWithGoogle } from "@/domain/auth/api/authApi";
 import GoogleLoginButton from "@/domain/auth/components/GoogleLoginButton";
 import { useLanguage } from "@/shared/context/LanguageContext";
 import { useAuthStore } from "@/shared/store/useAuthStore";
@@ -14,16 +14,12 @@ export default function LoginPageClient() {
   const router = useRouter();
   const { locale } = useLanguage();
   const { showToast } = useToastStore();
-  const storedUser = useAuthStore((state) => state.user);
-  const storedLoginMeta = useAuthStore((state) => state.loginMeta);
-  const storedToken = useAuthStore((state) => state.token);
+  const user = useAuthStore((state) => state.user);
+  const loginMeta = useAuthStore((state) => state.loginMeta);
+  const token = useAuthStore((state) => state.token);
   const hydrated = useAuthStore((state) => state.hydrated);
   const setLogin = useAuthStore((state) => state.setLogin);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState<AuthUser | null>(storedUser);
-  const [loginMeta, setLoginMeta] = useState<{ newUser: boolean; newConnection: boolean } | null>(storedLoginMeta);
-  const [accessTokenExpiresIn, setAccessTokenExpiresIn] = useState<number | null>(storedToken?.expiresIn ?? null);
-  const [refreshTokenExpiresIn, setRefreshTokenExpiresIn] = useState<number | null>(storedToken?.refreshTokenExpiresIn ?? null);
 
   useEffect(() => {
     if (!hydrated) {
@@ -31,25 +27,20 @@ export default function LoginPageClient() {
     }
 
     console.log("[jang][loginPage] hydrated auth state", {
-      hasStoredUser: Boolean(storedUser),
-      storedUserId: storedUser?.userId,
-      storedExpiresIn: storedToken?.expiresIn ?? null,
-      storedRefreshExpiresIn: storedToken?.refreshTokenExpiresIn ?? null,
+      hasStoredUser: Boolean(user),
+      storedUserId: user?.userId,
+      storedExpiresIn: token?.expiresIn ?? null,
+      storedRefreshExpiresIn: token?.refreshTokenExpiresIn ?? null,
     });
 
-    setLoggedInUser(storedUser);
-    setLoginMeta(storedLoginMeta);
-    setAccessTokenExpiresIn(storedToken?.expiresIn ?? null);
-    setRefreshTokenExpiresIn(storedToken?.refreshTokenExpiresIn ?? null);
-
-    if (storedUser) {
+    if (user) {
       console.log("[jang][loginPage] redirecting authenticated user", {
-        userId: storedUser.userId,
+        userId: user.userId,
         to: `/${locale}/timing`,
       });
       router.replace(`/${locale}/timing`);
     }
-  }, [hydrated, locale, router, storedLoginMeta, storedToken?.expiresIn, storedUser]);
+  }, [hydrated, locale, router, token, user]);
 
   const handleGoogleCredential = async (idToken: string) => {
     if (!idToken || isSubmitting) {
@@ -66,10 +57,6 @@ export default function LoginPageClient() {
       });
       setIsSubmitting(true);
       const result = await loginWithGoogle({ idToken });
-      setLoggedInUser(result.user);
-      setLoginMeta({ newUser: result.newUser, newConnection: result.newConnection });
-      setAccessTokenExpiresIn(result.token.expiresIn);
-      setRefreshTokenExpiresIn(result.token.refreshTokenExpiresIn);
       setLogin(result.user, result.token, { newUser: result.newUser, newConnection: result.newConnection });
       console.log("[jang][loginPage] login success", {
         userId: result.user.userId,
@@ -113,19 +100,19 @@ export default function LoginPageClient() {
             </Text>
           ) : null}
 
-          {loggedInUser ? (
+          {user ? (
             <>
               <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
                 <p className="font-semibold">로그인 확인 완료</p>
                 <ul className="mt-2 space-y-1">
-                  <li>userId: {loggedInUser.userId}</li>
-                  <li>nickName: {loggedInUser.nickName || "-"}</li>
-                  <li>provider: {loggedInUser.provider}</li>
-                  <li>emailVerified: {loggedInUser.emailVerified ? "true" : "false"}</li>
+                  <li>userId: {user.userId}</li>
+                  <li>nickName: {user.nickName || "-"}</li>
+                  <li>provider: {user.provider}</li>
+                  <li>emailVerified: {user.emailVerified ? "true" : "false"}</li>
                   <li>newUser: {loginMeta?.newUser ? "true" : "false"}</li>
                   <li>newConnection: {loginMeta?.newConnection ? "true" : "false"}</li>
-                  <li>accessTokenExpiresIn: {accessTokenExpiresIn ?? "-"}</li>
-                  <li>refreshTokenExpiresIn: {refreshTokenExpiresIn ?? "-"}</li>
+                  <li>accessTokenExpiresIn: {token?.expiresIn ?? "-"}</li>
+                  <li>refreshTokenExpiresIn: {token?.refreshTokenExpiresIn ?? "-"}</li>
                 </ul>
               </div>
               <Text size="sm" color="muted">

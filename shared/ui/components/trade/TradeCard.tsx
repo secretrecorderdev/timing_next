@@ -15,9 +15,14 @@ function TradeCardComponent({ item, onClick }: TradeCardProps) {
   const isProfit = item.profit >= 0;
   const isZero = item.profit === 0;
   const isSold = item.buyState === 2;
+  const isShortCovered = item.buyState === 12;
   const profitClassName = cn(
     "text-medium font-medium",
     isSold || isZero ? "text-gray-500" : isProfit ? "text-red-500" : "text-blue-500"
+  );
+  const currentPriceClassName = cn(
+    "text-medium font-medium",
+    isSold || isShortCovered || isZero ? "text-gray-500" : isProfit ? "text-red-500" : "text-blue-500"
   );
 
   return (
@@ -58,7 +63,7 @@ function TradeCardComponent({ item, onClick }: TradeCardProps) {
             timingDateTime={item.timingDateTime}
             profit={item.profit}
             profitClassName={profitClassName}
-            currentPriceClassName={profitClassName}
+            currentPriceClassName={currentPriceClassName}
           />
         </div>
         <TradeCardActions code={item.code} className="mt-1 flex flex-wrap justify-center gap-2 sm:mt-0 sm:self-center sm:gap-2.5" />

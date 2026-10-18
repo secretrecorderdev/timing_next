@@ -14,14 +14,16 @@ import { useLatestRisk } from "@/domain/risk/hooks/useLatestRisk";
 import { usePeriodRisk } from "@/domain/risk/hooks/usePeriodRisk";
 import { formatRiskDate, getRiskLevelBadgeClass, getRiskLevelLabel, RiskLevelKrMap } from "@/domain/risk/types/risk";
 import { usePageRefreshStore } from "@/shared/store/usePageRefreshStore";
+import { useTradeViewStore } from "@/shared/store/useTradeViewStore";
 
 export default function TimingPageClient({ today }: { today: string }) {
   const [range, setRange] = useState(() => toRangeByPreset("3m", today));
   const { startDate, endDate } = range;
-  const { items, rawItems, summary, refetch: refetchTimingItems } = useTimingTradeItems({ startDate, endDate, limit: 500, offset: 0 });
+  const { items, summary, refetch: refetchTimingItems } = useTimingTradeItems({ startDate, endDate, limit: 500, offset: 0 });
   const latestRiskQuery = useLatestRisk();
   const refetchLatestRisk = latestRiskQuery.refetch;
   const refreshRevision = usePageRefreshStore((state) => state.timingRevision);
+  const tradeTypeFilter = useTradeViewStore((state) => state.tradeTypeFilter);
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
   const [isRiskHistoryModalOpen, setIsRiskHistoryModalOpen] = useState(false);
   const periodRiskQuery = usePeriodRisk(startDate, endDate, isRiskHistoryModalOpen);
@@ -36,28 +38,59 @@ export default function TimingPageClient({ today }: { today: string }) {
 
   // console.log("아이템스", items)
 
-  const summaryTargetItems = useMemo(
-    () => items.filter((item) => item.buyState === 1 || item.buyState === 3 || item.buyState === 11 || item.buyState === 13),
+  const buySummaryTargetItems = useMemo(
+    () => items.filter((item) => item.buyState === 1 || item.buyState === 3),
     [items],
   );
+  const shortSummaryTargetItems = useMemo(
+    () => items.filter((item) => item.buyState === 11 || item.buyState === 13),
+    [items],
+  );
+  const filteredItems = useMemo(() => {
+    if (tradeTypeFilter === "buy") {
+      return items.filter((item) => item.buyState === 1 || item.buyState === 2 || item.buyState === 3);
+    }
+
+    if (tradeTypeFilter === "short") {
+      return items.filter((item) => item.buyState === 11 || item.buyState === 12 || item.buyState === 13);
+    }
+
+    return items;
+  }, [items, tradeTypeFilter]);
   const buySignalCount = useMemo(
-    () => items.filter((item) => item.buyState === 1 || item.buyState === 2 || item.buyState === 11 || item.buyState === 12).length,
+    () => items.filter((item) => item.buyState === 1 || item.buyState === 2).length,
     [items],
   );
   const sellSignalCount = useMemo(
-    () => items.filter((item) => item.buyState === 3 || item.buyState === 13).length,
+    () => items.filter((item) => item.buyState === 3).length,
     [items],
   );
-  const totalProfit = useMemo(
-    () => summaryTargetItems.reduce((sum, item) => sum + item.profit, 0),
-    [summaryTargetItems],
+  const shortSignalCount = useMemo(
+    () => items.filter((item) => item.buyState === 11 || item.buyState === 12).length,
+    [items],
   );
-
-  console.log("토탈 summaryTargetItems", summaryTargetItems )
-  const totalHoldingDays = useMemo(
-    () => summaryTargetItems.reduce((sum, item) => sum + item.holdingDays, 0),
-    [summaryTargetItems],
+  const coverSignalCount = useMemo(
+    () => items.filter((item) => item.buyState === 13).length,
+    [items],
   );
+  const totalBuyProfit = useMemo(
+    () => buySummaryTargetItems.reduce((sum, item) => sum + item.profit, 0),
+    [buySummaryTargetItems],
+  );
+  const totalShortProfit = useMemo(
+    () => shortSummaryTargetItems.reduce((sum, item) => sum + item.profit, 0),
+    [shortSummaryTargetItems],
+  );
+  const totalBuyHoldingDays = useMemo(
+    () => buySummaryTargetItems.reduce((sum, item) => sum + item.holdingDays, 0),
+    [buySummaryTargetItems],
+  );
+  const totalShortHoldingDays = useMemo(
+    () => shortSummaryTargetItems.reduce((sum, item) => sum + item.holdingDays, 0),
+    [shortSummaryTargetItems],
+  );
+  const totalProfit = totalBuyProfit + totalShortProfit;
+  const totalHoldingDays = totalBuyHoldingDays + totalShortHoldingDays;
   const annualizedProfit = useMemo(() => {
     if (totalHoldingDays <= 0) {
       return null;
@@ -65,6 +98,20 @@ export default function TimingPageClient({ today }: { today: string }) {
 
     return totalProfit / (totalHoldingDays / 365);
   }, [totalHoldingDays, totalProfit]);
+  const annualizedBuyProfit = useMemo(() => {
+    if (totalBuyHoldingDays <= 0) {
+      return null;
+    }
+
+    return totalBuyProfit / (totalBuyHoldingDays / 365);
+  }, [totalBuyHoldingDays, totalBuyProfit]);
+  const annualizedShortProfit = useMemo(() => {
+    if (totalShortHoldingDays <= 0) {
+      return null;
+    }
+
+    return totalShortProfit / (totalShortHoldingDays / 365);
+  }, [totalShortHoldingDays, totalShortProfit]);
   const rangeSummaryLabel = useMemo(
     () => getRangeSummaryLabel(startDate, endDate, today),
     [endDate, startDate, today]
@@ -142,7 +189,7 @@ export default function TimingPageClient({ today }: { today: string }) {
       }))
       .sort((a, b) => (riskLabelOrder.get(a.label) ?? 999) - (riskLabelOrder.get(b.label) ?? 999));
   }, [items]);
-  const summaryDetailItems = useMemo(
+  const totalSummaryDetailItems = useMemo(
     () => [
       {
         label: "기간",
@@ -157,19 +204,15 @@ export default function TimingPageClient({ today }: { today: string }) {
         value: formatDateInputValue(endDate),
       },
       {
-        label: "수익률 합",
+        label: "총 수익률 합",
         value: `${totalProfit > 0 ? "+" : ""}${totalProfit.toFixed(2)}%`,
       },
       {
-        label: "환산 연수익률",
+        label: "총 환산 연수익률",
         value:
           annualizedProfit == null
             ? "-"
             : `${annualizedProfit > 0 ? "+" : ""}${annualizedProfit.toFixed(2)}% (${totalProfit > 0 ? "+" : ""}${totalProfit.toFixed(2)} ÷ ${totalHoldingDays.toLocaleString()} × 365)`,
-      },
-      {
-        label: "매수/매도 신호",
-        value: `매수 신호 ${buySignalCount.toLocaleString()}건, 매도 신호 ${sellSignalCount.toLocaleString()}건`,
       },
       {
         label: "총 보유기간",
@@ -183,7 +226,55 @@ export default function TimingPageClient({ today }: { today: string }) {
             : `${Number(summary.kospiBenefit) > 0 ? "+" : ""}${Number(summary.kospiBenefit).toFixed(2)}% (${summary.startDateKospiValue ?? "-"} → ${summary.endDateKospiValue ?? "-"})`,
       },
     ],
-    [annualizedProfit, buySignalCount, rangeSummaryLabel, sellSignalCount, summary, totalHoldingDays, totalProfit],
+    [annualizedProfit, endDate, rangeSummaryLabel, startDate, summary, totalHoldingDays, totalProfit],
+  );
+  const buySummaryDetailItems = useMemo(
+    () => [
+      {
+        label: "매수 수익률 합",
+        value: `${totalBuyProfit > 0 ? "+" : ""}${totalBuyProfit.toFixed(2)}%`,
+      },
+      {
+        label: "매수 환산 연수익률",
+        value:
+          annualizedBuyProfit == null
+            ? "-"
+            : `${annualizedBuyProfit > 0 ? "+" : ""}${annualizedBuyProfit.toFixed(2)}% (${totalBuyProfit > 0 ? "+" : ""}${totalBuyProfit.toFixed(2)} ÷ ${totalBuyHoldingDays.toLocaleString()} × 365)`,
+      },
+      {
+        label: "매수/매도 신호",
+        value: `매수 신호 ${buySignalCount.toLocaleString()}건, 매도 신호 ${sellSignalCount.toLocaleString()}건`,
+      },
+      {
+        label: "총 매수 보유기간",
+        value: `${totalBuyHoldingDays.toLocaleString()}일`,
+      },
+    ],
+    [annualizedBuyProfit, buySignalCount, sellSignalCount, totalBuyHoldingDays, totalBuyProfit],
+  );
+  const shortSummaryDetailItems = useMemo(
+    () => [
+      {
+        label: "대주매도 수익률 합",
+        value: `${totalShortProfit > 0 ? "+" : ""}${totalShortProfit.toFixed(2)}%`,
+      },
+      {
+        label: "대주매도 환산 연수익률",
+        value:
+          annualizedShortProfit == null
+            ? "-"
+            : `${annualizedShortProfit > 0 ? "+" : ""}${annualizedShortProfit.toFixed(2)}% (${totalShortProfit > 0 ? "+" : ""}${totalShortProfit.toFixed(2)} ÷ ${totalShortHoldingDays.toLocaleString()} × 365)`,
+      },
+      {
+        label: "대주매도/청산 신호",
+        value: `대주매도 신호 ${shortSignalCount.toLocaleString()}건, 청산 신호 ${coverSignalCount.toLocaleString()}건`,
+      },
+      {
+        label: "총 대주매도 보유기간",
+        value: `${totalShortHoldingDays.toLocaleString()}일`,
+      },
+    ],
+    [annualizedShortProfit, coverSignalCount, shortSignalCount, totalShortHoldingDays, totalShortProfit],
   );
 
   return (
@@ -211,7 +302,20 @@ export default function TimingPageClient({ today }: { today: string }) {
         onConfirm={() => setIsSummaryModalOpen(false)}
         onCancel={() => setIsSummaryModalOpen(false)}
       >
-        <CommonDetailGrid items={summaryDetailItems} />
+        <div className="space-y-4">
+          <div>
+            <div className="mb-3 px-1 text-sm font-semibold text-gray-800">전체 요약</div>
+            <CommonDetailGrid items={totalSummaryDetailItems} />
+          </div>
+          <div className="border-t border-gray-100 pt-4">
+            <div className="mb-3 px-1 text-sm font-semibold text-gray-800">매수 요약</div>
+            <CommonDetailGrid items={buySummaryDetailItems} />
+          </div>
+          <div className="border-t border-gray-100 pt-4">
+            <div className="mb-3 px-1 text-sm font-semibold text-gray-800">대주매도 요약</div>
+            <CommonDetailGrid items={shortSummaryDetailItems} />
+          </div>
+        </div>
       </CommonModal>
       <CommonModal
         open={isRiskHistoryModalOpen}
@@ -276,7 +380,7 @@ export default function TimingPageClient({ today }: { today: string }) {
         </div>
       </CommonModal>
       <div className="mb-3 ml-1 flex flex-wrap items-center gap-2 text-sm font-semibold text-gray-700 sm:ml-2">
-        <span>총 {items.length.toLocaleString()}개</span>
+        <span>총 {filteredItems.length.toLocaleString()}개</span>
         {currentRiskLabel ? (
           <button
             type="button"
@@ -287,7 +391,7 @@ export default function TimingPageClient({ today }: { today: string }) {
           </button>
         ) : null}
       </div>
-      <TradeList items={items} onItemClick={setSelectedTradeItem} />
+      <TradeList items={filteredItems} onItemClick={setSelectedTradeItem} />
       <TradeDetailModal
         open={selectedTradeItem != null}
         item={selectedTradeItem}
