@@ -73,6 +73,50 @@ export default function TimingPageClient({ today }: { today: string }) {
     () => items.filter((item) => item.buyState === 13).length,
     [items],
   );
+  const buyTradeResultCounts = useMemo(
+    () =>
+      items.reduce(
+        (counts, item) => {
+          if (item.buyState !== 2) {
+            return counts;
+          }
+
+          counts.completed += 1;
+          if (item.profit > 0) {
+            counts.success += 1;
+          } else if (item.profit < 0) {
+            counts.failure += 1;
+          } else {
+            counts.flat += 1;
+          }
+          return counts;
+        },
+        { completed: 0, success: 0, failure: 0, flat: 0 },
+      ),
+    [items],
+  );
+  const shortTradeResultCounts = useMemo(
+    () =>
+      items.reduce(
+        (counts, item) => {
+          if (item.buyState !== 12) {
+            return counts;
+          }
+
+          counts.completed += 1;
+          if (item.profit > 0) {
+            counts.success += 1;
+          } else if (item.profit < 0) {
+            counts.failure += 1;
+          } else {
+            counts.flat += 1;
+          }
+          return counts;
+        },
+        { completed: 0, success: 0, failure: 0, flat: 0 },
+      ),
+    [items],
+  );
   const totalBuyProfit = useMemo(
     () => buySummaryTargetItems.reduce((sum, item) => sum + item.profit, 0),
     [buySummaryTargetItems],
@@ -246,11 +290,15 @@ export default function TimingPageClient({ today }: { today: string }) {
         value: `매수 신호 ${buySignalCount.toLocaleString()}건, 매도 신호 ${sellSignalCount.toLocaleString()}건`,
       },
       {
+        label: "매수 완료 거래 결과",
+        value: `완료 ${buyTradeResultCounts.completed.toLocaleString()}건, 성공 ${buyTradeResultCounts.success.toLocaleString()}건, 실패 ${buyTradeResultCounts.failure.toLocaleString()}건, 보합 ${buyTradeResultCounts.flat.toLocaleString()}건`,
+      },
+      {
         label: "총 매수 보유기간",
         value: `${totalBuyHoldingDays.toLocaleString()}일`,
       },
     ],
-    [annualizedBuyProfit, buySignalCount, sellSignalCount, totalBuyHoldingDays, totalBuyProfit],
+    [annualizedBuyProfit, buySignalCount, buyTradeResultCounts, sellSignalCount, totalBuyHoldingDays, totalBuyProfit],
   );
   const shortSummaryDetailItems = useMemo(
     () => [
@@ -270,11 +318,15 @@ export default function TimingPageClient({ today }: { today: string }) {
         value: `대주매도 신호 ${shortSignalCount.toLocaleString()}건, 청산 신호 ${coverSignalCount.toLocaleString()}건`,
       },
       {
+        label: "대주매도 완료 거래 결과",
+        value: `완료 ${shortTradeResultCounts.completed.toLocaleString()}건, 성공 ${shortTradeResultCounts.success.toLocaleString()}건, 실패 ${shortTradeResultCounts.failure.toLocaleString()}건, 보합 ${shortTradeResultCounts.flat.toLocaleString()}건`,
+      },
+      {
         label: "총 대주매도 보유기간",
         value: `${totalShortHoldingDays.toLocaleString()}일`,
       },
     ],
-    [annualizedShortProfit, coverSignalCount, shortSignalCount, totalShortHoldingDays, totalShortProfit],
+    [annualizedShortProfit, coverSignalCount, shortSignalCount, shortTradeResultCounts, totalShortHoldingDays, totalShortProfit],
   );
 
   return (
