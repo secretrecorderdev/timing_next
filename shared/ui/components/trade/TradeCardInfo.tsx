@@ -23,10 +23,10 @@ export function TradeCardInfo({
   profitClassName,
   currentPriceClassName,
 }: TradeCardInfoProps) {
-  const priceLabel = buyState === 2 ? "매도가" : buyState === 3 ? "매수가" : "현재가";
+  const priceLabel = buyState === 2 ? "매도가" : buyState === 3 ? "매수가" : buyState === 13 ? "대주매도가" : "현재가";
   const priceValue = buyState === 2
     ? (sellPrice ?? currentPrice)
-    : buyState === 3
+    : buyState === 3 || buyState === 13
       ? buyPrice
       : currentPrice;
 

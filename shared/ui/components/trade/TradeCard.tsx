@@ -18,7 +18,7 @@ function TradeCardComponent({ item, onClick }: TradeCardProps) {
   const isShortCovered = item.buyState === 12;
   const profitClassName = cn(
     "text-medium font-medium",
-    isSold || isZero ? "text-gray-500" : isProfit ? "text-red-500" : "text-blue-500"
+    isSold || isShortCovered || isZero ? "text-gray-500" : isProfit ? "text-red-500" : "text-blue-500"
   );
   const currentPriceClassName = cn(
     "text-medium font-medium",

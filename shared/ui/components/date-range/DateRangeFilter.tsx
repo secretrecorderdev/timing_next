@@ -1,12 +1,13 @@
 "use client";
 
 import dayjs from "dayjs";
-import { useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Button } from "@/shared/ui/primitives/button/Button";
 import {
   detectRangePreset,
   formatDateInputValue,
   formatDateTimeTo12Digits,
+  getCalendarRangeOptions,
   MIN_TIMING_DATE,
   rangePresetLabels,
   type RangePreset,
@@ -33,10 +34,44 @@ export function DateRangeFilter({
     [endDate, startDate]
   );
   const [isCustomSelected, setIsCustomSelected] = useState(false);
+  const [isYearMenuOpen, setIsYearMenuOpen] = useState(false);
+  const yearMenuRef = useRef<HTMLDivElement>(null);
+  const yearButtonRef = useRef<HTMLButtonElement>(null);
+  const yearMenuId = useId();
   const selectedPreset = isCustomSelected ? "custom" : detectedPreset;
+
+  useEffect(() => {
+    if (!isYearMenuOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (event.target instanceof Node && !yearMenuRef.current?.contains(event.target)) {
+        setIsYearMenuOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsYearMenuOpen(false);
+        yearButtonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isYearMenuOpen]);
 
   const startInputValue = useMemo(() => formatDateInputValue(startDate), [startDate]);
   const endInputValue = useMemo(() => formatDateInputValue(endDate), [endDate]);
+  const calendarOptions = useMemo(
+    () => getCalendarRangeOptions(minDate, maxDate),
+    [minDate, maxDate]
+  );
+  const selectedCalendarOption = calendarOptions.find(
+    (option) => option.startDate === startDate && option.endDate === endDate
+  )?.value ?? "";
 
   const handlePresetClick = (preset: RangePreset) => {
     if (preset === "custom") {
@@ -108,23 +143,70 @@ export function DateRangeFilter({
         </label>
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="mt-3 flex flex-wrap items-center gap-1.5 sm:gap-2">
         {(Object.keys(rangePresetLabels) as RangePreset[]).map((preset) => {
           const isSelected = selectedPreset === preset;
 
           return (
-            <Button
-              key={preset}
-              size="sm"
-              variant={isSelected ? "filled" : "outline"}
-              color={isSelected ? "success" : "muted"}
-              className="rounded-full px-4"
-              onClick={() => {
-                handlePresetClick(preset);
-              }}
-            >
-              {rangePresetLabels[preset]}
-            </Button>
+            <div key={preset} className="flex items-center gap-1.5 sm:gap-2">
+              <Button
+                size="sm"
+                variant={isSelected ? "filled" : "outline"}
+                color={isSelected ? "success" : "muted"}
+                className="rounded-full px-2! py-1! text-xs! whitespace-nowrap sm:px-4! sm:py-1.5! sm:text-sm!"
+                onClick={() => {
+                  handlePresetClick(preset);
+                }}
+              >
+                {rangePresetLabels[preset]}
+              </Button>
+              {preset === "custom" && (
+                <div
+                  ref={yearMenuRef}
+                  className="relative"
+                  onBlur={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget)) {
+                      setIsYearMenuOpen(false);
+                    }
+                  }}
+                >
+                  <button
+                    ref={yearButtonRef}
+                    type="button"
+                    aria-expanded={isYearMenuOpen}
+                    aria-controls={yearMenuId}
+                    onClick={() => setIsYearMenuOpen((open) => !open)}
+                    className="cursor-pointer rounded-full bg-transparent px-2 py-1 text-xs font-semibold whitespace-nowrap text-gray-500 outline-none transition hover:text-gray-600 active:text-gray-700 focus-visible:ring-2 focus-visible:ring-emerald-500 sm:px-4 sm:py-1.5 sm:text-sm"
+                  >
+                    연도선택
+                  </button>
+                  {isYearMenuOpen && (
+                    <div
+                      id={yearMenuId}
+                      aria-label="연도·반기 선택"
+                      className="absolute right-0 top-full z-30 mt-2 max-h-64 w-40 overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-lg"
+                    >
+                      {calendarOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          aria-pressed={selectedCalendarOption === option.value}
+                          onClick={() => {
+                            setIsCustomSelected(true);
+                            onChangeRange(option.startDate, option.endDate);
+                            setIsYearMenuOpen(false);
+                            yearButtonRef.current?.focus();
+                          }}
+                          className={`block w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm outline-none hover:bg-emerald-50 focus-visible:bg-emerald-50 ${selectedCalendarOption === option.value ? "bg-emerald-50 font-semibold text-emerald-600" : "text-gray-700"}`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           );
         })}
       </div>

@@ -15,6 +15,8 @@ import { usePeriodRisk } from "@/domain/risk/hooks/usePeriodRisk";
 import { formatRiskDate, getRiskLevelBadgeClass, getRiskLevelLabel, RiskLevelKrMap } from "@/domain/risk/types/risk";
 import { usePageRefreshStore } from "@/shared/store/usePageRefreshStore";
 import { useTradeViewStore } from "@/shared/store/useTradeViewStore";
+import { getFilteredTradeSummary } from "./tradeSummary";
+import { filterTradeItems } from "@/shared/lib/tradeTypeFilter";
 
 export default function TimingPageClient({ today }: { today: string }) {
   const [range, setRange] = useState(() => toRangeByPreset("3m", today));
@@ -46,17 +48,10 @@ export default function TimingPageClient({ today }: { today: string }) {
     () => items.filter((item) => item.buyState === 11 || item.buyState === 13),
     [items],
   );
-  const filteredItems = useMemo(() => {
-    if (tradeTypeFilter === "buy") {
-      return items.filter((item) => item.buyState === 1 || item.buyState === 2 || item.buyState === 3);
-    }
-
-    if (tradeTypeFilter === "short") {
-      return items.filter((item) => item.buyState === 11 || item.buyState === 12 || item.buyState === 13);
-    }
-
-    return items;
-  }, [items, tradeTypeFilter]);
+  const filteredItems = useMemo(
+    () => filterTradeItems(items, tradeTypeFilter),
+    [items, tradeTypeFilter],
+  );
   const buySignalCount = useMemo(
     () => items.filter((item) => item.buyState === 1 || item.buyState === 2).length,
     [items],
@@ -133,15 +128,12 @@ export default function TimingPageClient({ today }: { today: string }) {
     () => shortSummaryTargetItems.reduce((sum, item) => sum + item.holdingDays, 0),
     [shortSummaryTargetItems],
   );
-  const totalProfit = totalBuyProfit + totalShortProfit;
-  const totalHoldingDays = totalBuyHoldingDays + totalShortHoldingDays;
-  const annualizedProfit = useMemo(() => {
-    if (totalHoldingDays <= 0) {
-      return null;
-    }
-
-    return totalProfit / (totalHoldingDays / 365);
-  }, [totalHoldingDays, totalProfit]);
+  const { totalProfit, totalHoldingDays, annualizedProfit } = getFilteredTradeSummary(
+    tradeTypeFilter,
+    { totalProfit: totalBuyProfit, totalHoldingDays: totalBuyHoldingDays },
+    { totalProfit: totalShortProfit, totalHoldingDays: totalShortHoldingDays },
+  );
+  const tradeSummaryLabel = tradeTypeFilter === "buy" ? "매수/매도" : tradeTypeFilter === "short" ? "대주매도/청산" : "전체";
   const annualizedBuyProfit = useMemo(() => {
     if (totalBuyHoldingDays <= 0) {
       return null;
@@ -161,8 +153,8 @@ export default function TimingPageClient({ today }: { today: string }) {
     [endDate, startDate, today]
   );
   const periodLabel = useMemo(
-    () => `${rangeSummaryLabel} :`,
-    [rangeSummaryLabel]
+    () => `${rangeSummaryLabel} (${tradeSummaryLabel}) :`,
+    [rangeSummaryLabel, tradeSummaryLabel]
   );
   const currentRiskLabel = useMemo(
     () => getRiskLevelLabel(latestRiskQuery.data),
@@ -356,17 +348,17 @@ export default function TimingPageClient({ today }: { today: string }) {
       >
         <div className="space-y-4">
           <div>
-            <div className="mb-3 px-1 text-sm font-semibold text-gray-800">전체 요약</div>
+            <div className="mb-3 px-1 text-sm font-semibold text-gray-800">{tradeSummaryLabel} 요약</div>
             <CommonDetailGrid items={totalSummaryDetailItems} />
           </div>
-          <div className="border-t border-gray-100 pt-4">
+          {tradeTypeFilter !== "short" && <div className="border-t border-gray-100 pt-4">
             <div className="mb-3 px-1 text-sm font-semibold text-gray-800">매수 요약</div>
             <CommonDetailGrid items={buySummaryDetailItems} />
-          </div>
-          <div className="border-t border-gray-100 pt-4">
+          </div>}
+          {tradeTypeFilter !== "buy" && <div className="border-t border-gray-100 pt-4">
             <div className="mb-3 px-1 text-sm font-semibold text-gray-800">대주매도 요약</div>
             <CommonDetailGrid items={shortSummaryDetailItems} />
-          </div>
+          </div>}
         </div>
       </CommonModal>
       <CommonModal

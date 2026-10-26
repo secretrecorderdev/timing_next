@@ -30,6 +30,12 @@ function getTradeStatusText(buyState: number, buyPrice: number) {
       return `매수(${buyPrice.toLocaleString()}원, 매도됨)`;
     case 3:
       return "매도";
+    case 11:
+      return "대주매도";
+    case 12:
+      return `대주매도(${buyPrice.toLocaleString()}원, 청산됨)`;
+    case 13:
+      return "대주청산";
     default:
       return "매수(미확정)";
   }
@@ -43,6 +49,12 @@ function getTradeStatusColor(buyState: number) {
       return "text-gray-500";
     case 3:
       return "text-blue-500";
+    case 11:
+      return "text-purple-500";
+    case 12:
+      return "text-gray-500";
+    case 13:
+      return "text-green-500";
     default:
       return "text-purple-500";
   }
@@ -52,12 +64,13 @@ export function TradeDetailModal({ open, item, onClose }: TradeDetailModalProps)
   if (!item) return null;
 
   const isBuyState = item.buyState === 1;
+  const isShortTrade = item.buyState === 11 || item.buyState === 12 || item.buyState === 13;
   const shouldShowSellFields = item.buyState === 2 || item.buyState === 3;
   const sellDateTime = item.buyState === 3 ? (item.timingDateTime ?? "") : (item.sellDateTime ?? "");
   const sellPrice = item.sellPrice;
   const detailItems = [
-    { label: "매수 시간", value: item.buyDateTime && item.buyDateTime !== "-" ? item.buyDateTime : "" },
-    { label: "매수 가격", value: formatWon(item.buyPrice) },
+    { label: isShortTrade ? "대주 매도 시간" : "매수 시간", value: item.buyDateTime && item.buyDateTime !== "-" ? item.buyDateTime : "" },
+    { label: isShortTrade ? "대주매도 가격" : "매수 가격", value: formatWon(item.buyPrice) },
     ...(isBuyState
       ? [
           { label: "기준 시각", value: item.priceDateTime ?? "" },

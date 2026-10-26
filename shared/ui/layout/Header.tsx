@@ -186,7 +186,7 @@ export function Header({
           >
             {isTestingAuth ? "인증 테스트중" : "인증 테스트"}
           </button> */}
-          {refreshTarget === "timing" ? (
+          {refreshTarget === "timing" || refreshTarget === "hold" ? (
             <button
               type="button"
               onClick={cycleTradeTypeFilter}

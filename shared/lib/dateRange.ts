@@ -4,6 +4,44 @@ export type RangePreset = "7d" | "1m" | "3m" | "1y" | "custom";
 
 export const MIN_TIMING_DATE = "2023-08-01";
 
+export function getCalendarRangeOptions(minDate: string, maxDate: string) {
+  const min = dayjs(minDate).startOf("day");
+  const max = dayjs(maxDate).endOf("day");
+  const options: { value: string; label: string; startDate: string; endDate: string }[] = [];
+
+  if (!min.isValid() || !max.isValid() || min.isAfter(max)) return options;
+
+  for (let year = max.year(); year >= min.year(); year -= 1) {
+    const periods = [
+      { key: "h2", label: "하반기", start: `${year}-07-01`, end: `${year}-12-31` },
+      { key: "h1", label: "상반기", start: `${year}-01-01`, end: `${year}-06-30` },
+      { key: "full", label: "전체", start: `${year}-01-01`, end: `${year}-12-31` },
+    ];
+
+    for (const period of periods) {
+      const start = dayjs(period.start).startOf("day");
+      const end = dayjs(period.end).endOf("day");
+      if (start.isAfter(max) || end.isBefore(min)) continue;
+
+      options.push({
+        value: `${year}-${period.key}`,
+        label: `${year}년 ${period.label}`,
+        startDate: formatDateTimeTo12Digits(start.isBefore(min) ? min : start),
+        endDate: formatDateTimeTo12Digits(end.isAfter(max) ? max : end),
+      });
+    }
+  }
+
+  options.push({
+    value: "all",
+    label: "전체",
+    startDate: formatDateTimeTo12Digits(min),
+    endDate: formatDateTimeTo12Digits(max),
+  });
+
+  return options;
+}
+
 export const rangePresetLabels: Record<RangePreset, string> = {
   "7d": "최근 7일",
   "1m": "최근 1개월",
