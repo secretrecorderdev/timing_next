@@ -435,7 +435,13 @@ export default function TimingPageClient({ today }: { today: string }) {
           </button>
         ) : null}
       </div>
-      <TradeList items={filteredItems} onItemClick={setSelectedTradeItem} />
+      <TradeList
+        key={`${startDate}-${endDate}-${tradeTypeFilter}`}
+        items={filteredItems}
+        groupByDate
+        tradeTypeFilter={tradeTypeFilter}
+        onItemClick={setSelectedTradeItem}
+      />
       <TradeDetailModal
         open={selectedTradeItem != null}
         item={selectedTradeItem}

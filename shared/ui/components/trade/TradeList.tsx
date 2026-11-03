@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { TradeCard } from "./TradeCard";
+import { TradeDateHeader } from "./TradeDateHeader";
+import { createTradeListRows } from "@/shared/lib/tradeDateGroup";
+import type { TradeTypeFilter } from "@/shared/store/useTradeViewStore";
 import type { TradeItem } from "./trade.types";
 
 interface TradeListProps {
@@ -11,6 +14,8 @@ interface TradeListProps {
   estimateSize?: number;
   overscan?: number;
   onItemClick?: (item: TradeItem) => void;
+  groupByDate?: boolean;
+  tradeTypeFilter?: TradeTypeFilter;
 }
 
 export function TradeList({
@@ -19,6 +24,8 @@ export function TradeList({
   estimateSize = 124,
   overscan = 8,
   onItemClick,
+  groupByDate = false,
+  tradeTypeFilter = "all",
 }: TradeListProps) {
   const parentRef = useRef<HTMLDivElement | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -26,11 +33,14 @@ export function TradeList({
 
   const responsiveEstimateSize = isMobile ? 152 : estimateSize;
   const responsiveGap = isMobile ? 8 : 4;
+  const rows = useMemo(() => createTradeListRows(items, groupByDate), [items, groupByDate]);
+  const getItemKey = useCallback((index: number) => rows[index].key, [rows]);
 
   const rowVirtualizer = useVirtualizer({
-    count: items.length,
+    count: rows.length,
+    getItemKey,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => responsiveEstimateSize,
+    estimateSize: (index) => rows[index].type === "header" ? (isMobile ? 100 : 92) : responsiveEstimateSize,
     overscan,
     gap: responsiveGap,
   });
@@ -57,7 +67,7 @@ export function TradeList({
 
   useEffect(() => {
     rowVirtualizer.measure();
-  }, [isMobile, items.length, rowVirtualizer]);
+  }, [isMobile, rows.length, tradeTypeFilter, rowVirtualizer]);
 
   useEffect(() => {
     if (height != null) {
@@ -93,13 +103,13 @@ export function TradeList({
   const renderedItems = useMemo(
     () =>
       virtualItems.map((virtualRow) => ({
-        key: `${items[virtualRow.index]?.code}-${items[virtualRow.index]?.buyDateTime}-${virtualRow.index}`,
-        item: items[virtualRow.index],
+        key: virtualRow.key,
+        row: rows[virtualRow.index],
         start: virtualRow.start,
         size: virtualRow.size,
         index: virtualRow.index,
       })),
-    [items, virtualItems]
+    [rows, virtualItems]
   );
 
   if (items.length === 0) {
@@ -116,7 +126,7 @@ export function TradeList({
         className="relative w-full"
         style={{ height: totalSize }}
       >
-        {renderedItems.map(({ key, item, start, index }) => (
+        {renderedItems.map(({ key, row, start, index }) => (
           <div
             key={key}
             data-index={index}
@@ -126,10 +136,11 @@ export function TradeList({
               transform: `translateY(${start}px)`,
             }}
           >
-            <TradeCard
-              item={item}
-              onClick={onItemClick}
-            />
+            {row.type === "header" ? (
+              <TradeDateHeader group={row.group} tradeTypeFilter={tradeTypeFilter} />
+            ) : (
+              <TradeCard item={row.item} onClick={onItemClick} />
+            )}
           </div>
         ))}
       </div>
