@@ -13,6 +13,7 @@ import GlobalNotification from "@/shared/ui/feedback/GlobalNotification";
 import SignalInboxModal from "@/shared/ui/feedback/SignalInboxModal";
 import { TimingTradeItemsBootstrap } from "@/shared/bootstrap/TimingTradeItemsBootstrap";
 import GuestAccessBootstrap from "@/shared/bootstrap/GuestAccessBootstrap";
+import { UiPreferencesBootstrap } from "@/shared/bootstrap/UiPreferencesBootstrap";
 
 // import { TabItem } from "@/ui/components/HorizontalTab/HorizontalTab.types";
 export const metadata: Metadata = baseMetadata;
@@ -33,6 +34,7 @@ export default async function RootLayout({
       </head>
       <body className="mx-auto min-h-screen max-w-screen-lg overflow-x-hidden px-3 pb-20 antialiased sm:px-4 sm:pb-24">
         <QueryProvider>
+          <UiPreferencesBootstrap />
           <GlobalLoading />
           <GlobalToast />
           <GlobalNotification />

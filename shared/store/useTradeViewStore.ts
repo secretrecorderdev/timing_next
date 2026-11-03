@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 
-type TradeViewMode = "compact" | "detailed";
+export type TradeViewMode = "compact" | "detailed";
 export type TradeTypeFilter = "all" | "buy" | "short";
 
 interface TradeViewState {
