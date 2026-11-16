@@ -54,7 +54,7 @@ for (const buyState of [1, 2, 3, 11, 12, 13]) {
         currentPrice: 12000, holdingDays: 3, profit: 2, buyDateTime: "2026-10-24" },
     }));
     const isShort = [11, 12, 13].includes(buyState);
-    assert.ok(html.includes(`${isShort ? "대주 매도 시간" : "매수 시간"}: 2026-10-24`), html);
+    assert.ok(html.includes(`${isShort ? "대주매도 시간" : "매수 시간"}: 2026-10-24`), html);
     assert.ok(html.includes(`${isShort ? "대주매도 가격" : "매수 가격"}: ${(10000).toLocaleString()}원`), html);
   });
 }

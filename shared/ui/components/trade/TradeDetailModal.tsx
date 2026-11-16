@@ -69,7 +69,7 @@ export function TradeDetailModal({ open, item, onClose }: TradeDetailModalProps)
   const sellDateTime = item.buyState === 3 ? (item.timingDateTime ?? "") : (item.sellDateTime ?? "");
   const sellPrice = item.sellPrice;
   const detailItems = [
-    { label: isShortTrade ? "대주 매도 시간" : "매수 시간", value: item.buyDateTime && item.buyDateTime !== "-" ? item.buyDateTime : "" },
+    { label: isShortTrade ? "대주매도 시간" : "매수 시간", value: item.buyDateTime && item.buyDateTime !== "-" ? item.buyDateTime : "" },
     { label: isShortTrade ? "대주매도 가격" : "매수 가격", value: formatWon(item.buyPrice) },
     ...(isBuyState
       ? [
