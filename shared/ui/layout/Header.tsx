@@ -186,7 +186,7 @@ export function Header({
           >
             {isTestingAuth ? "인증 테스트중" : "인증 테스트"}
           </button> */}
-          {refreshTarget === "timing" || refreshTarget === "hold" ? (
+          {refreshTarget === "timing" || refreshTarget === "hold" || /^\/(ko|en)\/item\/[^/]+\/?$/.test(pathname) ? (
             <button
               type="button"
               onClick={cycleTradeTypeFilter}
@@ -198,7 +198,7 @@ export function Header({
                     : "현재 대주매도만 보기, 전체 보기로 전환"
               }
               title={tradeTypeFilter === "all" ? "전체" : tradeTypeFilter === "buy" ? "매수만" : "대주매도만"}
-              className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition ${tradeTypeFilter === "buy" ? "border-red-300 bg-red-50 text-red-600" : tradeTypeFilter === "short" ? "border-blue-300 bg-blue-50 text-blue-600" : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"}`}
+              className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition ${tradeTypeFilter === "buy" ? "border-red-300 bg-red-50 text-red-600" : tradeTypeFilter === "short" ? "border-purple-300 bg-purple-50 text-purple-600" : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"}`}
             >
               {tradeTypeFilter === "all" ? (
                 <MdViewList aria-hidden="true" className="h-5 w-5" />

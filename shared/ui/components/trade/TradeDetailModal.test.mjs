@@ -26,6 +26,31 @@ const context = {
 vm.runInNewContext(outputText, context);
 const { TradeDetailModal } = context.exports;
 
+test("청산 완료 상세에 청산 시간과 가격을 표시한다", () => {
+  const html = renderToStaticMarkup(TradeDetailModal({
+    open: true, onClose() {},
+    item: { buyState: 12, code: "005930", name: "삼성전자", buyPrice: 10000,
+      currentPrice: 12000, sellPrice: 9000, holdingDays: 3, profit: 10,
+      buyDateTime: "2026-10-24 09:00", sellDateTime: "2026-10-27 10:30",
+      timingDateTime: "2026-10-27 10:35" },
+  }));
+  assert.ok(html.includes("청산 시간: 2026-10-27 10:30"), html);
+  assert.ok(html.includes(`청산 가격: ${(9000).toLocaleString()}원`), html);
+  assert.ok(!html.includes(" | 매도 시간:"), html);
+});
+
+test("대주청산 신호 상세의 청산 시간은 timing_date를 사용한다", () => {
+  const html = renderToStaticMarkup(TradeDetailModal({
+    open: true, onClose() {},
+    item: { buyState: 13, code: "005930", name: "삼성전자", buyPrice: 10000,
+      currentPrice: 12000, sellPrice: 9000, holdingDays: 3, profit: 10,
+      buyDateTime: "2026-10-24 09:00", sellDateTime: "2026-10-27 10:30",
+      timingDateTime: "2026-10-27 10:35" },
+  }));
+  assert.ok(html.includes("청산 시간: 2026-10-27 10:35"), html);
+  assert.ok(html.includes(`청산 가격: ${(9000).toLocaleString()}원`), html);
+});
+
 for (const [buyState, text, color] of [
   [1, "매수", "text-red-500"],
   [2, "매도됨", "text-gray-500"],

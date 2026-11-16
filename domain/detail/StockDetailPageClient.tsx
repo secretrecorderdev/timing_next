@@ -5,7 +5,9 @@ import { useDetailTimingTradeItems } from "@/domain/detail/hooks/useDetailTiming
 import { useDailyCloseChart } from "@/domain/detail/hooks/useDailyCloseChart";
 import type { ChartSignalMarker } from "@/domain/detail/types/chart";
 import type { KospiStockItem } from "@/domain/items/types/item";
-import { TradeActionButtons } from "@/shared/ui/components/trade/TradeActionButtons";
+import { useTradeViewStore } from "@/shared/store/useTradeViewStore";
+import { filterTradeItems } from "@/shared/lib/tradeTypeFilter";
+import { getFilteredTradeSummary } from "@/domain/timing/tradeSummary";
 import { TradeDetailModal } from "@/shared/ui/components/trade/TradeDetailModal";
 import { TradeList } from "@/shared/ui/components/trade/TradeList";
 import type { TradeItem } from "@/shared/ui/components/trade/trade.types";
@@ -47,13 +49,19 @@ export default function StockDetailPageClient({ stock, today }: { stock: KospiSt
   );
   const [selectedTradeItem, setSelectedTradeItem] = useState<TradeItem | null>(null);
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
+  const tradeTypeFilter = useTradeViewStore((state) => state.tradeTypeFilter);
+  const filteredItems = useMemo(() => filterTradeItems(items, tradeTypeFilter), [items, tradeTypeFilter]);
+  const filteredRawItems = useMemo(
+    () => filterTradeItems(rawItems.map((item) => ({ ...item, buyState: Number(item.buyState ?? 0) })), tradeTypeFilter),
+    [rawItems, tradeTypeFilter],
+  );
 
   const chartPriceByDate = useMemo(() => new Map(chartItems.map((item) => [toMarkerDate(String(item.date)) ?? "", item.price])), [chartItems]);
 
   const chartMarkers = useMemo<ChartSignalMarker[]>(() => {
     const markers: ChartSignalMarker[] = [];
 
-    rawItems.forEach((item) => {
+    filteredRawItems.forEach((item) => {
       const buyState = Number(item.buyState ?? 0);
       const buyDate = toMarkerDate(item.buyDate ?? item.timingDate ?? item.regDate);
       const sellDate = toMarkerDate(item.sellDate ?? item.priceDate);
@@ -67,12 +75,21 @@ export default function StockDetailPageClient({ stock, today }: { stock: KospiSt
       if ((buyState === 2 || buyState === 3) && sellDate && sellPriceOnChart != null) {
         markers.push({ id: `sell-${item.id}-${sellDate}`, time: sellDate, position: "aboveBar", shape: "arrowDown", color: "#2563eb", text: "매도" });
       }
+
+      if ((buyState === 11 || buyState === 12) && buyDate && buyPriceOnChart != null) {
+        markers.push({ id: `short-${item.id}-${buyDate}`, time: buyDate, position: "aboveBar", shape: "arrowDown", color: "#a855f7", text: "대주매도" });
+      }
+
+      const coverDate = toMarkerDate(item.timingDate);
+      if (buyState === 13 && coverDate && chartPriceByDate.has(coverDate)) {
+        markers.push({ id: `cover-${item.id}-${coverDate}`, time: coverDate, position: "belowBar", shape: "arrowUp", color: "#22c55e", text: "청산" });
+      }
     });
 
-    return markers;
-  }, [chartPriceByDate, rawItems]);
+    return markers.sort((a, b) => a.time.localeCompare(b.time));
+  }, [chartPriceByDate, filteredRawItems]);
 
-  const summaryTargetItems = useMemo(
+  const buySummaryTargetItems = useMemo(
     () => items.filter((item) => item.buyState === 1 || item.buyState === 3),
     [items],
   );
@@ -84,26 +101,44 @@ export default function StockDetailPageClient({ stock, today }: { stock: KospiSt
     () => items.filter((item) => item.buyState === 3).length,
     [items],
   );
-  const totalProfit = useMemo(
-    () => summaryTargetItems.reduce((sum, item) => sum + item.profit, 0),
-    [summaryTargetItems],
+  const shortSummaryTargetItems = useMemo(
+    () => items.filter((item) => item.buyState === 11 || item.buyState === 13),
+    [items],
   );
-  const totalHoldingDays = useMemo(
-    () => summaryTargetItems.reduce((sum, item) => sum + item.holdingDays, 0),
-    [summaryTargetItems],
+  const shortSignalCount = items.filter((item) => item.buyState === 11 || item.buyState === 12).length;
+  const coverSignalCount = items.filter((item) => item.buyState === 13).length;
+  const buyTotals = useMemo(
+    () => ({
+      totalProfit: buySummaryTargetItems.reduce((sum, item) => sum + item.profit, 0),
+      totalHoldingDays: buySummaryTargetItems.reduce((sum, item) => sum + item.holdingDays, 0),
+    }),
+    [buySummaryTargetItems],
   );
-  const annualizedProfit = totalHoldingDays > 0
-    ? totalProfit / (totalHoldingDays / 365)
-    : undefined;
+  const shortTotals = useMemo(
+    () => ({
+      totalProfit: shortSummaryTargetItems.reduce((sum, item) => sum + item.profit, 0),
+      totalHoldingDays: shortSummaryTargetItems.reduce((sum, item) => sum + item.holdingDays, 0),
+    }),
+    [shortSummaryTargetItems],
+  );
+  const { totalProfit, totalHoldingDays, annualizedProfit } = getFilteredTradeSummary(tradeTypeFilter, buyTotals, shortTotals);
+  const tradeSummaryLabel = tradeTypeFilter === "buy" ? "매수/매도" : tradeTypeFilter === "short" ? "대주매도/청산" : "전체";
   const rangeSummaryLabel = getRangeSummaryLabel(chartRange.startDate, chartRange.endDate, today);
-  const periodLabel = `${rangeSummaryLabel} :`;
+  const periodLabel = `${rangeSummaryLabel} (${tradeSummaryLabel}) :`;
   const summaryDetailItems = [
     { label: "기간", value: rangeSummaryLabel },
     { label: "시작일", value: formatDateInputValue(chartRange.startDate) },
     { label: "종료일", value: formatDateInputValue(chartRange.endDate) },
     { label: "수익률 합", value: `${totalProfit > 0 ? "+" : ""}${totalProfit.toFixed(2)}%` },
     { label: "환산 연수익률", value: annualizedProfit == null ? "-" : `${annualizedProfit > 0 ? "+" : ""}${annualizedProfit.toFixed(2)}%` },
-    { label: "매수/매도 신호", value: `매수 신호 ${buySignalCount.toLocaleString()}건, 매도 신호 ${sellSignalCount.toLocaleString()}건` },
+    ...(tradeTypeFilter !== "short" ? [
+      { label: "매수/매도 수익률 합", value: `${buyTotals.totalProfit > 0 ? "+" : ""}${buyTotals.totalProfit.toFixed(2)}%` },
+      { label: "매수/매도 신호", value: `매수 신호 ${buySignalCount.toLocaleString()}건, 매도 신호 ${sellSignalCount.toLocaleString()}건` },
+    ] : []),
+    ...(tradeTypeFilter !== "buy" ? [
+      { label: "대주매도/청산 수익률 합", value: `${shortTotals.totalProfit > 0 ? "+" : ""}${shortTotals.totalProfit.toFixed(2)}%` },
+      { label: "대주매도/청산 신호", value: `대주매도 신호 ${shortSignalCount.toLocaleString()}건, 청산 신호 ${coverSignalCount.toLocaleString()}건` },
+    ] : []),
     { label: "총 보유기간", value: `${totalHoldingDays.toLocaleString()}일` },
     {
       label: "코스피 변동률",
@@ -128,7 +163,7 @@ export default function StockDetailPageClient({ stock, today }: { stock: KospiSt
           periodLabel={periodLabel}
           totalProfit={totalProfit}
           totalHoldingDays={totalHoldingDays}
-          annualizedProfit={annualizedProfit}
+          annualizedProfit={annualizedProfit ?? undefined}
           onClick={() => setIsSummaryModalOpen(true)}
         />
       </div>
@@ -143,13 +178,10 @@ export default function StockDetailPageClient({ stock, today }: { stock: KospiSt
       </CommonModal>
 
       <div className="mb-3 mt-6 ml-1 text-sm font-semibold text-gray-700 sm:ml-2">
-        {stock.baseName} [{stock.code}] · 총 {items.length.toLocaleString()}개
+        {stock.baseName} [{stock.code}] · 총 {filteredItems.length.toLocaleString()}개
       </div>
-      <TradeList items={items} onItemClick={setSelectedTradeItem} />
+      <TradeList items={filteredItems} onItemClick={setSelectedTradeItem} />
       <TradeDetailModal open={selectedTradeItem != null} item={selectedTradeItem} onClose={() => setSelectedTradeItem(null)} />
-      <div className="mt-4">
-        <TradeActionButtons code={stock.code} className="grid grid-cols-2 justify-items-center gap-2 sm:flex sm:justify-end sm:gap-3" />
-      </div>
     </div>
   );
 }

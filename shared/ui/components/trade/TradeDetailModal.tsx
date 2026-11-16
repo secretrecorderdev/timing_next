@@ -64,9 +64,11 @@ export function TradeDetailModal({ open, item, onClose }: TradeDetailModalProps)
   if (!item) return null;
 
   const isBuyState = item.buyState === 1;
+  const isShortCovered = item.buyState === 12;
+  const isCoverSignal = item.buyState === 13;
   const isShortTrade = item.buyState === 11 || item.buyState === 12 || item.buyState === 13;
-  const shouldShowSellFields = item.buyState === 2 || item.buyState === 3;
-  const sellDateTime = item.buyState === 3 ? (item.timingDateTime ?? "") : (item.sellDateTime ?? "");
+  const shouldShowSellFields = item.buyState === 2 || item.buyState === 3 || isShortCovered || isCoverSignal;
+  const sellDateTime = item.buyState === 3 || isCoverSignal ? (item.timingDateTime ?? "") : (item.sellDateTime ?? "");
   const sellPrice = item.sellPrice;
   const detailItems = [
     { label: isShortTrade ? "대주매도 시간" : "매수 시간", value: item.buyDateTime && item.buyDateTime !== "-" ? item.buyDateTime : "" },
@@ -79,8 +81,8 @@ export function TradeDetailModal({ open, item, onClose }: TradeDetailModalProps)
       : []),
     ...(shouldShowSellFields
       ? [
-          { label: "매도 시간", value: sellDateTime },
-          { label: "매도 가격", value: formatWon(sellPrice) },
+          { label: isShortCovered || isCoverSignal ? "청산 시간" : "매도 시간", value: sellDateTime },
+          { label: isShortCovered || isCoverSignal ? "청산 가격" : "매도 가격", value: formatWon(sellPrice) },
         ]
       : []),
     { label: "보유 기간", value: `${item.holdingDays.toLocaleString()}일` },
