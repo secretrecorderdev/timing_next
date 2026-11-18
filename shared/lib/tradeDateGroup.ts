@@ -19,11 +19,14 @@ function getSignalDate(value: string | null | undefined): string | null {
     : null;
 }
 
-export function groupTradesByDate(items: TradeItem[]): TradeDateGroup[] {
+export type TradeDateBasis = "signal" | "entry";
+
+export function groupTradesByDate(items: TradeItem[], dateBasis: TradeDateBasis = "signal"): TradeDateGroup[] {
   const groups = new Map<string, TradeDateGroup>();
+  const dateField = dateBasis === "entry" ? "buyDateTime" : "timingDateTime";
 
   for (const item of items) {
-    const dateKey = getSignalDate(item.timingDateTime) ?? "unknown";
+    const dateKey = getSignalDate(item[dateField]) ?? "unknown";
     let group = groups.get(dateKey);
     if (!group) {
       const date = new Date(`${dateKey}T00:00:00Z`);
@@ -63,7 +66,7 @@ export function groupTradesByDate(items: TradeItem[]): TradeDateGroup[] {
   });
   for (const group of result) {
     if (group.dateKey !== "unknown") {
-      group.items.sort((a, b) => (b.timingDateTime ?? "").localeCompare(a.timingDateTime ?? ""));
+      group.items.sort((a, b) => (b[dateField] ?? "").localeCompare(a[dateField] ?? ""));
     }
   }
   return result;
@@ -73,7 +76,7 @@ export type TradeListRow =
   | { type: "header"; key: string; group: TradeDateGroup }
   | { type: "trade"; key: string; item: TradeItem };
 
-export function createTradeListRows(items: TradeItem[], groupByDate = false): TradeListRow[] {
+export function createTradeListRows(items: TradeItem[], groupByDate = false, dateBasis: TradeDateBasis = "signal"): TradeListRow[] {
   const tradeRow = (item: TradeItem, index: number, prefix = ""): TradeListRow => ({
     type: "trade",
     key: `${prefix}trade:${item.code}:${item.buyDateTime}:${item.timingDateTime}:${item.buyState}:${index}`,
@@ -82,7 +85,7 @@ export function createTradeListRows(items: TradeItem[], groupByDate = false): Tr
   if (!groupByDate) {
     return items.map((item, index) => tradeRow(item, index));
   }
-  return groupTradesByDate(items).flatMap((group): TradeListRow[] => [
+  return groupTradesByDate(items, dateBasis).flatMap((group): TradeListRow[] => [
     { type: "header", key: `date:${group.dateKey}`, group },
     ...group.items.map((item, index) => tradeRow(item, index, `${group.dateKey}:`)),
   ]);

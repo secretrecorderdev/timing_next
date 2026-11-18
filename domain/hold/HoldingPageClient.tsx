@@ -36,7 +36,14 @@ export default function HoldingPageClient() {
           {tradeTypeFilter !== "buy" && <span className="text-purple-500">대주매도 {shortCount.toLocaleString()}</span>}
         </div>
       </div>
-      <TradeList items={filteredItems} onItemClick={setSelectedTradeItem} />
+      <TradeList
+        key={tradeTypeFilter}
+        items={filteredItems}
+        groupByDate
+        dateBasis="entry"
+        tradeTypeFilter={tradeTypeFilter}
+        onItemClick={setSelectedTradeItem}
+      />
       <TradeDetailModal
         open={selectedTradeItem != null}
         item={selectedTradeItem}

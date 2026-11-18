@@ -8,6 +8,22 @@ const item = (buyState, timingDateTime, code = "005930") => ({
   holdingDays: 1, profit: 10,
 });
 
+test("보유 목록은 진입 날짜와 시간순으로 묶고 원본 신호일을 유지한다", () => {
+  const items = [
+    { ...item(1, "2026-11-10 09:00", "a"), buyDateTime: "2026-11-02 09:00" },
+    { ...item(11, "2026-11-10 09:00", "b"), buyDateTime: "2026-11-03 10:00" },
+    { ...item(1, "2026-11-11 09:00", "c"), buyDateTime: "2026-11-03 15:00" },
+    { ...item(11, "2026-11-10 09:00", "d"), buyDateTime: null },
+  ];
+  const rows = createTradeListRows(items, true, "entry");
+  const groups = rows.filter((row) => row.type === "header").map((row) => row.group);
+  assert.deepEqual(groups.map((group) => group.dateKey), ["2026-11-03", "2026-11-02", "unknown"]);
+  assert.deepEqual(groups[0].items.map((row) => row.code), ["c", "b"]);
+  assert.deepEqual(groups[0].counts, { buy: 1, sell: 0, short: 1, cover: 0 });
+  assert.equal(rows.find((row) => row.type === "trade").item, items[2]);
+  assert.equal(items[2].timingDateTime, "2026-11-11 09:00");
+});
+
 test("신호 날짜별로 묶고 완료된 진입 신호를 중복 없이 집계한다", () => {
   const items = [1, 2, 3, 11, 12, 13].map((state) => item(state, "2026-11-03 09:00"));
   const groups = groupTradesByDate(items);

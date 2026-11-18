@@ -31,7 +31,12 @@ for (const [filter, buyCount, shortCount, total, profit, days] of [
         if (id.endsWith("/useTradeViewStore")) return { useTradeViewStore: (select) => select({ tradeTypeFilter: filter }) };
         if (id.endsWith("/tradeTypeFilter")) return { filterTradeItems };
         if (id.endsWith("/TradeDetailModal")) return { TradeDetailModal: () => null };
-        if (id.endsWith("/TradeList")) return { TradeList: ({ items: rows }) => `목록 ${rows.map((row) => row.buyState).join(",")}` };
+        if (id.endsWith("/TradeList")) return { TradeList: ({ items: rows, groupByDate, dateBasis, tradeTypeFilter }) => {
+          assert.equal(groupByDate, true);
+          assert.equal(dateBasis, "entry");
+          assert.equal(tradeTypeFilter, filter);
+          return `목록 ${rows.map((row) => row.buyState).join(",")}`;
+        } };
         return require(id);
       },
     };

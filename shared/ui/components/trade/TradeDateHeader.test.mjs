@@ -32,6 +32,16 @@ for (const [filter, shown, hidden] of [
   });
 }
 
+test("보유 날짜 헤더는 매수·대주매도만 필터에 맞게 표시한다", () => {
+  for (const filter of ["all", "buy", "short"]) {
+    const html = renderToStaticMarkup(TradeDateHeader({ group, tradeTypeFilter: filter, dateBasis: "entry" }));
+    assert.equal(html.includes(">매수 "), filter !== "short");
+    assert.equal(html.includes(">대주매도 "), filter !== "buy");
+    assert.ok(!html.includes(">매도 "), html);
+    assert.ok(!html.includes(">청산 "), html);
+  }
+});
+
 test("0건과 날짜 미상도 표시하며 날짜 라벨은 HTML로 해석하지 않는다", () => {
   const html = renderToStaticMarkup(TradeDateHeader({
     group: { ...group, label: "날짜 미상<script>", counts: { buy: 0, sell: 0, short: 0, cover: 0 } },

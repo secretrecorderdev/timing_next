@@ -5,6 +5,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { TradeCard } from "./TradeCard";
 import { TradeDateHeader } from "./TradeDateHeader";
 import { createTradeListRows } from "@/shared/lib/tradeDateGroup";
+import type { TradeDateBasis } from "@/shared/lib/tradeDateGroup";
 import type { TradeTypeFilter } from "@/shared/store/useTradeViewStore";
 import type { TradeItem } from "./trade.types";
 
@@ -15,6 +16,7 @@ interface TradeListProps {
   overscan?: number;
   onItemClick?: (item: TradeItem) => void;
   groupByDate?: boolean;
+  dateBasis?: TradeDateBasis;
   tradeTypeFilter?: TradeTypeFilter;
 }
 
@@ -25,6 +27,7 @@ export function TradeList({
   overscan = 8,
   onItemClick,
   groupByDate = false,
+  dateBasis = "signal",
   tradeTypeFilter = "all",
 }: TradeListProps) {
   const parentRef = useRef<HTMLDivElement | null>(null);
@@ -33,7 +36,7 @@ export function TradeList({
 
   const responsiveEstimateSize = isMobile ? 152 : estimateSize;
   const responsiveGap = isMobile ? 8 : 4;
-  const rows = useMemo(() => createTradeListRows(items, groupByDate), [items, groupByDate]);
+  const rows = useMemo(() => createTradeListRows(items, groupByDate, dateBasis), [items, groupByDate, dateBasis]);
   const getItemKey = useCallback((index: number) => rows[index].key, [rows]);
 
   const rowVirtualizer = useVirtualizer({
@@ -137,7 +140,7 @@ export function TradeList({
             }}
           >
             {row.type === "header" ? (
-              <TradeDateHeader group={row.group} tradeTypeFilter={tradeTypeFilter} />
+              <TradeDateHeader group={row.group} tradeTypeFilter={tradeTypeFilter} dateBasis={dateBasis} />
             ) : (
               <TradeCard item={row.item} onClick={onItemClick} />
             )}
