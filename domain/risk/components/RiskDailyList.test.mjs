@@ -26,10 +26,10 @@ test("일별 목록은 날짜·코스피·신호만 표시하고 현재·점수�
   for (const text of ["현재", "74.58", "수익률", "보유 기간", "총합", "매수 통계"]) assert.ok(!table.includes(text), table);
 });
 
-test("목록 위에 세 신호의 매수·대주매도 이익 합과 실제 건수·건당 수익률을 표시한다", () => {
+test("신호별 수익 요약은 숨기고 일별 목록만 표시한다", () => {
   const html = render({ items });
   const summary = html.slice(0, html.indexOf("<table"));
-  for (const text of ["매수 추천", "매수/매도 혼합", "매도 추천", "매수", "대주매도", "이익 합 +12.00%", "이익 합 -6.00%", "3건", "2건", "건당 수익률 +4.00%", "건당 수익률 -3.00%", "text-red-700", "text-amber-700", "text-blue-700"]) assert.ok(summary.includes(text), html);
+  for (const text of ["신호별 수익 요약", "매수 추천", "매수/매도 혼합", "매도 추천", "이익 합", "건당 수익률", "조회된 전체 날짜 기준"]) assert.ok(!summary.includes(text), html);
 });
 
 test("로딩·오류·빈 목록을 구분하고 오류 시 기존 데이터를 표시하지 않는다", () => {
@@ -48,11 +48,11 @@ test("코스피와 신호가 null이면 0이나 임의의 매매 신호 대신 �
   assert.ok(html.includes(">-<"));
 });
 
-test("0건의 건당 수익과 이익 미집계는 대시로 표시한다", () => {
+test("0건과 이익 미집계 데이터도 합계 없이 목록만 표시한다", () => {
   const html = render({ items: [{ ...items[0], buyBenefit: 0, buyCount: 0, shortBenefit: null }] });
-  assert.ok(html.includes("이익 합 0.00%"), html);
-  assert.ok(html.includes("이익 합 -"), html);
-  assert.ok(html.includes("건당 수익률 -"), html);
+  assert.ok(html.includes("2026-11-23"), html);
+  assert.ok(!html.includes("이익 합"), html);
+  assert.ok(!html.includes("건당 수익률"), html);
   assert.ok(!html.includes("NaN"));
   assert.ok(!html.includes("Infinity"));
 });

@@ -1,5 +1,5 @@
 import { formatRiskDailyDate, getRiskDailySignal, type RiskDailyItem } from "@/domain/risk/types/riskDaily";
-import { getRiskDailySummary } from "@/domain/risk/types/riskDailySummary";
+// import { getRiskDailySummary } from "@/domain/risk/types/riskDailySummary";
 
 interface RiskDailyListProps {
   items: RiskDailyItem[];
@@ -7,9 +7,9 @@ interface RiskDailyListProps {
   isError?: boolean;
 }
 
-function formatBenefit(value: number | null) {
-  return value == null ? "-" : `${value > 0 ? "+" : ""}${value.toFixed(2)}%`;
-}
+// function formatBenefit(value: number | null) {
+//   return value == null ? "-" : `${value > 0 ? "+" : ""}${value.toFixed(2)}%`;
+// }
 
 export function RiskDailyList({ items, isLoading, isError }: RiskDailyListProps) {
   if (isLoading) {
@@ -24,7 +24,7 @@ export function RiskDailyList({ items, isLoading, isError }: RiskDailyListProps)
 
   return (
     <div className="space-y-4">
-      <section aria-label="신호별 수익 요약" className="space-y-2">
+      {/* <section aria-label="신호별 수익 요약" className="space-y-2">
         {getRiskDailySummary(items).map((group) => (
           <article key={group.signal} className={`rounded-xl border px-4 py-3 ${getRiskDailySignal(group.signal).className}`}>
             <h3 className="mb-2 text-sm font-semibold">
@@ -41,7 +41,7 @@ export function RiskDailyList({ items, isLoading, isError }: RiskDailyListProps)
           </article>
         ))}
         <p className="px-1 text-xs text-gray-500">조회된 전체 날짜 기준 · 이익 미집계 일자의 건수는 해당 방향 집계에서 제외합니다.</p>
-      </section>
+      </section> */}
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-gray-200 text-xs text-gray-500">
